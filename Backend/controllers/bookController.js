@@ -32,11 +32,13 @@ export const createBook = async (req, res) => {
       genere,
       condition,
       price,
-      image: req.file?.path || "",
+      image: req.file ? req.file.path : "",
       listedBy: req.user.userId,
     });
 
     await newBook.save();
+    await newBook.populate("listedBy", "username");
+
     res.status(201).json(newBook);
   } catch (err) {
     res.status(500).json({ message: "Failed to create book", error: err.message });
@@ -45,12 +47,26 @@ export const createBook = async (req, res) => {
 
 export const updateBook = async (req, res) => {
   try {
+    const userId = req.user.userId;
     const book = await Book.findById(req.params.id);
-    if (!book || book.listedBy.toString() !== req.user.userId) {
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    if (book.listedBy.toString() !== userId) {
       return res.status(403).json({ message: "Unauthorized to update this book" });
     }
 
-    const updated = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const update = { ...req.body };
+    if (req.file) {
+      update.image = req.file.path;
+    }
+
+    const updated = await Book.findByIdAndUpdate(req.params.id, update, {
+      new: true,
+      runValidators: true,
+    }).populate("listedBy", "username");
+
     res.status(200).json(updated);
   } catch (err) {
     res.status(500).json({ message: "Failed to update book", error: err.message });
@@ -59,12 +75,17 @@ export const updateBook = async (req, res) => {
 
 export const deleteBook = async (req, res) => {
   try {
+    const userId = req.user.userId;
     const book = await Book.findById(req.params.id);
-    if (!book || book.listedBy.toString() !== req.user.userId) {
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    if (book.listedBy.toString() !== userId) {
       return res.status(403).json({ message: "Unauthorized to delete this book" });
     }
 
-    await Book.findByIdAndDelete(req.params.id);
+    await book.deleteOne();
     res.status(200).json({ message: "Book deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Failed to delete book", error: err.message });
@@ -72,16 +93,24 @@ export const deleteBook = async (req, res) => {
 };
 
 export const searchBook = async (req, res) => {
-  const query = req.query.q;
+  const query = req.query.q || "";
   try {
     const books = await Book.find({
       $or: [
         { title: { $regex: query, $options: "i" } },
         { author: { $regex: query, $options: "i" } },
       ],
-    });
+    }).populate("listedBy", "username");
     res.json(books);
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", message: err.message });
+  }
+};
+export const getMyBooks = async (req, res) => {
+  try {
+    const books = await Book.find({ listedBy: req.user.userId }).populate("listedBy", "username");
+    res.status(200).json(books);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch your books", error: err.message });
   }
 };
