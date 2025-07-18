@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AddBook from "./pages/AddBook";
 import MyBooks from "./pages/MyBooks";
+import Wishlist from "./pages/Wishlist";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/add-book" element={<AddBook />} />
             <Route path="/my-books" element={<MyBooks />} />
+            <Route path="/wishlist" element={<Wishlist />} />
           </Routes>
         </div>
       </div>

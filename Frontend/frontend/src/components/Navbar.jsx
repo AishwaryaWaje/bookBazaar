@@ -32,7 +32,6 @@ const Navbar = () => {
       await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
     } catch (err) {
       console.error("Logout failed", err);
-      // still proceed locally
     }
     logoutUser();
     setUser(null);
@@ -47,7 +46,6 @@ const Navbar = () => {
 
   return (
     <nav className="bg-black text-white px-6 py-3 flex items-center justify-between">
-      {/* Left: Logo + Search */}
       <div className="flex items-center gap-6">
         <Link to="/" className="text-xl font-bold">
           BookBazaar
@@ -62,16 +60,12 @@ const Navbar = () => {
         />
       </div>
 
-      {/* Right: Icons + User */}
       <div className="flex items-center gap-6 text-sm relative">
         <Link to="/notification" className="hover:underline">
           <i className="fa-solid fa-bell"></i>
         </Link>
         <Link to="/wishlist" className="hover:underline">
           <i className="fa-solid fa-heart"></i>
-        </Link>
-        <Link to="/cart" className="hover:underline">
-          <i className="fa-solid fa-cart-shopping"></i>
         </Link>
 
         {!user ? (
