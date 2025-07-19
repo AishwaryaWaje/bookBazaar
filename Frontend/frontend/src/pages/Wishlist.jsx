@@ -64,7 +64,7 @@ const Wishlist = () => {
                 <img
                   src={book?.image || "https://via.placeholder.com/250x200?text=No+Image"}
                   alt={book?.title || "Book"}
-                  className="w-full h-48 object-cover bg-gray-100"
+                  className="w-full h-48 object-contain bg-gray-100 p-2"
                   onError={(e) => {
                     e.currentTarget.src = "https://via.placeholder.com/250x200?text=No+Image";
                   }}

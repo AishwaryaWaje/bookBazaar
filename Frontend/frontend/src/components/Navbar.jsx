@@ -9,6 +9,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const debounceTimer = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -20,12 +21,21 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSearch = (e) => {
-    if (e.key === "Enter" && searchTerm.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
-      setDropdownOpen(false);
-    }
-  };
+  useEffect(() => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+    debounceTimer.current = setTimeout(() => {
+      if (window.location.pathname === "/login") return;
+
+      if (searchTerm.trim()) {
+        navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      } else {
+        navigate("/");
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer.current);
+  }, [searchTerm, navigate]);
 
   const handleLogout = async () => {
     try {
@@ -44,6 +54,15 @@ const Navbar = () => {
     navigate(path);
   };
 
+  const handleProtectedClick = (path) => {
+    if (!user) {
+      alert("Please login to view this page.");
+      navigate("/login");
+      return;
+    }
+    navigate(path);
+  };
+
   return (
     <nav className="bg-black text-white px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-6">
@@ -54,19 +73,19 @@ const Navbar = () => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={handleSearch}
           placeholder="Search books by Title/Author..."
           className="px-3 py-1 text-white placeholder-white rounded-md w-64 border border-white bg-transparent"
         />
       </div>
 
       <div className="flex items-center gap-6 text-sm relative">
-        <Link to="/notification" className="hover:underline">
+        <button onClick={() => handleProtectedClick("/notification")} className="hover:underline">
           <i className="fa-solid fa-bell"></i>
-        </Link>
-        <Link to="/wishlist" className="hover:underline">
+        </button>
+
+        <button onClick={() => handleProtectedClick("/wishlist")} className="hover:underline">
           <i className="fa-solid fa-heart"></i>
-        </Link>
+        </button>
 
         {!user ? (
           <Link to="/login" className="hover:underline">

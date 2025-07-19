@@ -93,17 +93,17 @@ export const deleteBook = async (req, res) => {
 };
 
 export const searchBook = async (req, res) => {
-  const query = req.query.q || "";
+  const q = (req.query.q || "").trim();
+  if (!q) return res.json([]);
+  const regex = new RegExp(q, "i");
   try {
     const books = await Book.find({
-      $or: [
-        { title: { $regex: query, $options: "i" } },
-        { author: { $regex: query, $options: "i" } },
-      ],
-    }).populate("listedBy", "username");
+      $or: [{ title: regex }, { author: regex }, { genere: regex }],
+    }).populate("listedBy", "username name");
     res.json(books);
   } catch (err) {
-    res.status(500).json({ error: "Server error", message: err.message });
+    console.error("Search error", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 export const getMyBooks = async (req, res) => {
