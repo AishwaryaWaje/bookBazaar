@@ -10,14 +10,24 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const user = getCurrentUser();
 
-  // Fetch all books
+  // Helper function to shuffle an array
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Fetch all books and shuffle them
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/books", {
           withCredentials: true,
         });
-        setBooks(res.data);
+        setBooks(shuffleArray(res.data));
       } catch (err) {
         console.error("Error fetching books", err);
       } finally {
@@ -51,7 +61,6 @@ const Home = () => {
     }
 
     if (wishlistIds.has(bookId)) {
-      // Remove from wishlist
       try {
         await axios.delete(`http://localhost:5000/api/wishlist/${bookId}`, {
           withCredentials: true,
@@ -65,7 +74,6 @@ const Home = () => {
         console.error("Error removing from wishlist", err);
       }
     } else {
-      // Add to wishlist
       try {
         await axios.post(
           "http://localhost:5000/api/wishlist",
