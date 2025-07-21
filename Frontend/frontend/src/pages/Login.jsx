@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import socket from "../utils/Socket";
 
 const Login = () => {
   const [inputs, setInputs] = useState({ email: "", password: "" });
@@ -18,6 +19,7 @@ const Login = () => {
         withCredentials: true,
       });
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      socket.connect();
       navigate("/");
       window.location.reload();
     } catch (err) {

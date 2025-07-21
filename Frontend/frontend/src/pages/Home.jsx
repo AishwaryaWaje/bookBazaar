@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../utils/AuthUtils";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import ChatModal from "../components/chat/ChatModel";
 
 const Home = () => {
   const [books, setBooks] = useState([]);
   const [wishlistIds, setWishlistIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
+  const [activeChat, setActiveChat] = useState(null);
   const user = getCurrentUser();
+  const navigate = useNavigate();
 
-  // Helper function to shuffle an array
   const shuffleArray = (array) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -20,7 +23,6 @@ const Home = () => {
     return shuffled;
   };
 
-  // Fetch all books and shuffle them
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -37,7 +39,6 @@ const Home = () => {
     fetchBooks();
   }, []);
 
-  // Fetch wishlist
   useEffect(() => {
     const fetchWishlist = async () => {
       if (!user) return;
@@ -94,6 +95,27 @@ const Home = () => {
     return "Unknown";
   };
 
+  const handleBookClick = async (book) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/conversations",
+        { bookId: book._id },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
+
+      setActiveChat({ book, conversationId: res.data._id });
+    } catch (err) {
+      console.error("Failed to open chat", err);
+    }
+  };
+
   if (loading)
     return <div className="text-center py-10 text-xl font-semibold">Loading books...</div>;
 
@@ -106,10 +128,13 @@ const Home = () => {
           return (
             <div
               key={book._id}
-              className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col w-full max-w-xs mx-auto">
-              {/* Heart Icon */}
+              onClick={() => handleBookClick(book)}
+              className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col w-full max-w-xs mx-auto cursor-pointer">
               <button
-                onClick={() => handleWishlistToggle(book._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleWishlistToggle(book._id);
+                }}
                 className="absolute top-3 right-3 p-1 bg-white rounded-full shadow-md hover:scale-110 transition">
                 {isInWishlist ? (
                   <HeartSolid className="h-6 w-6 text-red-500" />
@@ -148,6 +173,15 @@ const Home = () => {
           </div>
         )}
       </div>
+
+      {activeChat && (
+        <ChatModal
+          book={activeChat.book}
+          conversationId={activeChat.conversationId}
+          currentUser={user}
+          onClose={() => setActiveChat(null)}
+        />
+      )}
     </div>
   );
 };

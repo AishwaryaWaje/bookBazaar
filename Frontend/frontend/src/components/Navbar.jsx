@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
+import socket from "../utils/Socket";
 import axios from "axios";
 
 const DEBOUNCE_MS = 300;
@@ -33,9 +34,6 @@ const Navbar = () => {
       setSearchTerm(q);
       setIsSearchActive(q.trim().length > 0);
     } else {
-      // don’t overwrite active typing if user is on search page
-      // if you want to clear box on all other pages, uncomment below:
-      // setSearchTerm("");
       setIsSearchActive(false);
     }
   }, [location]);
@@ -69,6 +67,8 @@ const Navbar = () => {
     } catch (err) {
       console.error("Logout failed", err);
     }
+
+    socket.disconnect();
     logoutUser();
     setUser(null);
     setDropdownOpen(false);
@@ -97,19 +97,8 @@ const Navbar = () => {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-
     if (!isSearchActive && value.trim().length > 0) {
       setIsSearchActive(true);
-    }
-  };
-
-  const handleSearchFocus = () => {
-    setIsSearchActive(true);
-  };
-
-  const handleSearchBlur = () => {
-    if (searchTerm.trim() === "") {
-      setIsSearchActive(false);
     }
   };
 
@@ -130,20 +119,20 @@ const Navbar = () => {
           type="text"
           value={searchTerm}
           onChange={handleSearchChange}
-          onFocus={handleSearchFocus}
-          onBlur={handleSearchBlur}
           placeholder="Search books by Title/Author..."
           className="px-3 py-1 text-white placeholder-white rounded-md w-64 border border-white bg-transparent"
         />
       </div>
 
       <div className="flex items-center gap-6 text-sm relative">
-        <button
-          onClick={() => handleProtectedClick("/notification")}
-          className="hover:underline"
-          type="button">
-          <i className="fa-solid fa-bell"></i>
-        </button>
+        {user && (
+          <button
+            onClick={() => handleProtectedClick("/messages")}
+            className="hover:underline"
+            type="button">
+            <i className="fa-solid fa-envelope"></i>
+          </button>
+        )}
 
         <button
           onClick={() => handleProtectedClick("/wishlist")}
@@ -191,6 +180,12 @@ const Navbar = () => {
                   className="block w-full px-4 py-2 text-left hover:bg-gray-100"
                   type="button">
                   My Wishlist
+                </button>
+                <button
+                  onClick={() => go("/messages")}
+                  className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                  type="button">
+                  Messages
                 </button>
                 <div className="border-t my-1" />
                 <button
