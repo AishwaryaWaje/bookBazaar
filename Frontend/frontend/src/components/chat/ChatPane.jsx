@@ -1,14 +1,19 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
+
 import socket from "../../utils/Socket";
+
+const idToStr = (val) => (val?._id ? String(val._id) : val ? String(val) : "");
 
 const ChatPane = ({ conversationId, currentUser }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef(null);
-  const myId = currentUser?._id;
+
+  const myId = idToStr(currentUser?._id || currentUser?.userId || currentUser?.id);
 
   useEffect(() => {
+    if (!conversationId) return;
     const loadMessages = async () => {
       try {
         const res = await axios.get(
@@ -20,7 +25,7 @@ const ChatPane = ({ conversationId, currentUser }) => {
         console.error("Failed to load messages", err);
       }
     };
-    if (conversationId) loadMessages();
+    loadMessages();
   }, [conversationId]);
 
   useEffect(() => {
@@ -28,17 +33,25 @@ const ChatPane = ({ conversationId, currentUser }) => {
 
     socket.emit("join_conversation", conversationId);
 
-    const handleReceive = (msg) => {
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => {
-          const exists = prev.some((m) => m._id === msg._id);
-          return exists ? prev : [...prev, msg];
-        });
-      }
+    const handleSocketMessage = (msg) => {
+      if (!msg) return;
+      const convoId = msg.conversationId || msg.conversation || msg._doc?.conversationId;
+      if (String(convoId) !== String(conversationId)) return;
+
+      setMessages((prev) => {
+        const msgId = idToStr(msg._id);
+        if (msgId && prev.some((m) => idToStr(m._id) === msgId)) return prev;
+        return [...prev, msg];
+      });
     };
 
-    socket.on("receive_message", handleReceive);
-    return () => socket.off("receive_message", handleReceive);
+    socket.on("messageCreated", handleSocketMessage);
+    socket.on("receive_message", handleSocketMessage);
+
+    return () => {
+      socket.off("messageCreated", handleSocketMessage);
+      socket.off("receive_message", handleSocketMessage);
+    };
   }, [conversationId]);
 
   useEffect(() => {
@@ -58,12 +71,14 @@ const ChatPane = ({ conversationId, currentUser }) => {
           { text },
           { withCredentials: true }
         );
-        setMessages((prev) => {
-          const exists = prev.some((m) => m._id === res.data._id);
-          return exists ? prev : [...prev, res.data];
-        });
 
-        socket.emit("send_message", { ...res.data, conversationId });
+        const saved = res.data;
+
+        setMessages((prev) => {
+          const msgId = idToStr(saved._id);
+          if (msgId && prev.some((m) => idToStr(m._id) === msgId)) return prev;
+          return [...prev, saved];
+        });
       } catch (err) {
         console.error("Send failed", err);
       }
@@ -78,20 +93,20 @@ const ChatPane = ({ conversationId, currentUser }) => {
           <p className="text-gray-400 text-sm text-center">No messages yet</p>
         ) : (
           messages.map((m, index) => {
-            const senderId = m.sender?._id || m.sender;
+            const senderObj = m.sender && typeof m.sender === "object" ? m.sender : null;
+            const senderId = idToStr(senderObj || m.sender);
+            const senderName = senderObj?.username || (senderId === myId ? "You" : "User");
             const isMe = senderId === myId;
 
-            const showUsername = index === 0 || messages[index - 1].sender !== m.sender;
+            const prev = messages[index - 1];
+            const prevSenderId = prev ? idToStr(prev.sender?._id || prev.sender) : null;
+            const showUsername = !prev || prevSenderId !== senderId;
 
             return (
               <div
                 key={m._id || `${senderId}-${m.createdAt}-${index}`}
                 className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                {showUsername && (
-                  <span className="text-xs text-gray-500 mb-1">
-                    {isMe ? "You" : m.sender?.username || "User"}
-                  </span>
-                )}
+                {showUsername && <span className="text-xs text-gray-500 mb-1">{senderName}</span>}
                 <div
                   className={`px-3 py-2 rounded-lg max-w-[75%] text-sm shadow ${
                     isMe

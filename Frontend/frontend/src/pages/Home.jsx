@@ -114,7 +114,7 @@ const Home = () => {
     } catch (err) {
       if (err.response && err.response.status !== 404) {
         console.error("Error checking conversation:", err.response.data);
-        alert("Unable to open chat. Please try again later.");
+        alert("Unable to open chat. ");
         return;
       }
     }
@@ -134,7 +134,7 @@ const Home = () => {
       setActiveChat({ book, conversationId: res.data._id });
     } catch (createErr) {
       console.error("Failed to create chat:", createErr.response?.data || createErr);
-      alert("Unable to open chat. Please try again later.");
+      alert("You can't open this chat as you have posted this. ");
     }
   };
 
