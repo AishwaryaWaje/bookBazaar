@@ -5,25 +5,17 @@ import Message from "../models/Message.js";
 export const getOrCreateConversation = async (req, res) => {
   const { bookId } = req.body;
   const userId = req.user?.userId;
-  if (!userId) {
-    return res.status(401).json({ message: "User not authenticated (no user id)" });
-  }
-  if (!bookId) {
-    return res.status(400).json({ message: "bookId is required" });
-  }
+  if (!userId) return res.status(401).json({ message: "User not authenticated (no user id)" });
+  if (!bookId) return res.status(400).json({ message: "bookId is required" });
 
   try {
     const book = await Book.findById(bookId).populate("listedBy", "_id username");
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
+    if (!book) return res.status(404).json({ message: "Book not found" });
 
-    const sellerRaw = book.listedBy?._id || book.listedBy;
-    if (!sellerRaw) {
+    const sellerId = (book.listedBy?._id || book.listedBy)?.toString();
+    if (!sellerId) {
       return res.status(500).json({ message: "Book missing listedBy; cannot start chat." });
     }
-    const sellerId = sellerRaw.toString();
-
     if (sellerId === userId.toString()) {
       return res.status(400).json({ message: "You listed this book. Chat not needed." });
     }
@@ -54,9 +46,7 @@ export const getOrCreateConversation = async (req, res) => {
 
 export const getUserConversations = async (req, res) => {
   const userId = req.user?.userId;
-  if (!userId) {
-    return res.status(401).json({ message: "User not authenticated" });
-  }
+  if (!userId) return res.status(401).json({ message: "User not authenticated" });
 
   try {
     const convos = await Conversation.find({ participants: userId })
@@ -77,9 +67,7 @@ export const getUserConversations = async (req, res) => {
       })
     );
 
-    const filtered = convosWithLastMsg.filter((c) => c.lastMessage !== "");
-
-    res.status(200).json(filtered);
+    res.status(200).json(convosWithLastMsg);
   } catch (e) {
     console.error("getUserConversations error:", e);
     res.status(500).json({ message: "Failed to fetch conversations", error: e.message });

@@ -3,7 +3,7 @@ import axios from "axios";
 import { getCurrentUser } from "../utils/AuthUtils";
 
 const Wishlist = () => {
-  const [wishlist, setWishlist] = useState([]); // array of wishlist items { _id, book:{...} }
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const user = getCurrentUser();
 
@@ -16,7 +16,6 @@ const Wishlist = () => {
         });
         console.log("Wishlist API Response:", res.data);
 
-        // Backend returns array of wishlist docs: [{ _id, user, book:{...} }, ...]
         const items = Array.isArray(res.data) ? res.data : res.data.books || [];
         setWishlist(items);
       } catch (err) {
@@ -33,7 +32,7 @@ const Wishlist = () => {
       await axios.delete(`http://localhost:5000/api/wishlist/${bookId}`, {
         withCredentials: true,
       });
-      // Filter out the wishlist item whose book matches this bookId
+
       setWishlist((prev) => prev.filter((item) => item.book?._id !== bookId));
     } catch (err) {
       console.error("Error removing from wishlist", err);
@@ -56,7 +55,7 @@ const Wishlist = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {wishlist.map((item) => {
-            const book = item.book || item; // fallback if API ever returns flat
+            const book = item.book || item;
             return (
               <div
                 key={item._id}

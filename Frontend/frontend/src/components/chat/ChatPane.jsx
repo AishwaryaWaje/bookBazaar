@@ -73,20 +73,33 @@ const ChatPane = ({ conversationId, currentUser }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 p-4 overflow-y-auto bg-gray-50 rounded space-y-2">
+      <div className="flex-1 p-4 overflow-y-auto bg-gray-50 rounded space-y-3">
         {messages.length === 0 ? (
           <p className="text-gray-400 text-sm text-center">No messages yet</p>
         ) : (
-          messages.map((m) => {
+          messages.map((m, index) => {
             const senderId = m.sender?._id || m.sender;
             const isMe = senderId === myId;
+
+            const showUsername = index === 0 || messages[index - 1].sender !== m.sender;
+
             return (
               <div
-                key={m._id || `${senderId}-${m.createdAt}`}
-                className={`max-w-[75%] px-3 py-2 rounded-md text-sm ${
-                  isMe ? "ml-auto bg-blue-600 text-white" : "mr-auto bg-gray-200 text-gray-900"
-                }`}>
-                {m.text}
+                key={m._id || `${senderId}-${m.createdAt}-${index}`}
+                className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                {showUsername && (
+                  <span className="text-xs text-gray-500 mb-1">
+                    {isMe ? "You" : m.sender?.username || "User"}
+                  </span>
+                )}
+                <div
+                  className={`px-3 py-2 rounded-lg max-w-[75%] text-sm shadow ${
+                    isMe
+                      ? "bg-blue-600 text-white rounded-br-none"
+                      : "bg-gray-200 text-gray-900 rounded-bl-none"
+                  }`}>
+                  {m.text}
+                </div>
               </div>
             );
           })

@@ -100,19 +100,41 @@ const Home = () => {
       navigate("/login");
       return;
     }
+
+    try {
+      const existing = await axios.get(`http://localhost:5000/api/conversations/book/${book._id}`, {
+        withCredentials: true,
+      });
+
+      if (existing.data && existing.data._id) {
+        console.log("Existing conversation found:", existing.data);
+        setActiveChat({ book, conversationId: existing.data._id });
+        return;
+      }
+    } catch (err) {
+      if (err.response && err.response.status !== 404) {
+        console.error("Error checking conversation:", err.response.data);
+        alert("Unable to open chat. Please try again later.");
+        return;
+      }
+    }
+
+    if (book.listedBy?._id === user._id) {
+      alert("You cannot chat about your own listing until someone messages you.");
+      return;
+    }
+
     try {
       const res = await axios.post(
         "http://localhost:5000/api/conversations",
         { bookId: book._id },
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${user.token}` },
-        }
+        { withCredentials: true }
       );
-
+      console.log("Created new conversation:", res.data);
       setActiveChat({ book, conversationId: res.data._id });
-    } catch (err) {
-      console.error("Failed to open chat", err);
+    } catch (createErr) {
+      console.error("Failed to create chat:", createErr.response?.data || createErr);
+      alert("Unable to open chat. Please try again later.");
     }
   };
 
