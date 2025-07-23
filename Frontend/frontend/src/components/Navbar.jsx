@@ -103,7 +103,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-black text-white px-6 py-3 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 bg-black text-white px-4 py-3 flex items-center justify-between w-full">
       <div className="flex items-center gap-6">
         <Link
           to="/"
