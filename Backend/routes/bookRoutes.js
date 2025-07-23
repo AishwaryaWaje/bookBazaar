@@ -6,6 +6,7 @@ import {
   deleteBook,
   searchBook,
   getMyBooks,
+  getGenres,
 } from "../controllers/bookController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { upload } from "../middleware/cloudinaryMiddleware.js";
@@ -13,6 +14,7 @@ import { upload } from "../middleware/cloudinaryMiddleware.js";
 const router = express.Router();
 
 router.get("/", getBooks);
+router.get("/genres", getGenres);
 router.get("/mine", protect, getMyBooks);
 router.get("/search", searchBook);
 router.post("/", protect, upload.single("image"), createBook);

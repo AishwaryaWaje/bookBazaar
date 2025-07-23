@@ -22,6 +22,16 @@ export const getBooks = async (req, res) => {
   }
 };
 
+export const getGenres = async (req, res) => {
+  try {
+    const genres = await Book.distinct("genere");
+    res.json(genres);
+  } catch (error) {
+    console.error("Error fetching genres:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export const createBook = async (req, res) => {
   try {
     const { title, author, genere, condition, price } = req.body;

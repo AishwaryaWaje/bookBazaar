@@ -1,6 +1,21 @@
-import React from "react";
+import { React, useEffect, useState } from "react";
+import axios from "axios";
 
 const FiltersBar = ({ filters, setFilters }) => {
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/books/genres");
+        setGenres(res.data);
+      } catch (err) {
+        console.error("Failed to fetch genres", err);
+      }
+    };
+    fetchGenres();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -52,11 +67,11 @@ const FiltersBar = ({ filters, setFilters }) => {
         onChange={handleChange}
         className="border px-3 py-1 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
         <option value="">All Genres</option>
-        <option value="Fictional">Fictional</option>
-        <option value="Novel">Novel</option>
-        <option value="Science">Science</option>
-        <option value="Biography">Biography</option>
-        <option value="Self-Help">Self-Help</option>
+        {genres.map((g) => (
+          <option key={g} value={g}>
+            {g}
+          </option>
+        ))}
       </select>
 
       {/* Condition Filter */}
