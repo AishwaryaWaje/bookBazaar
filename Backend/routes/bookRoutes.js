@@ -16,7 +16,7 @@ router.get("/", getBooks);
 router.get("/mine", protect, getMyBooks);
 router.get("/search", searchBook);
 router.post("/", protect, upload.single("image"), createBook);
-router.put("/:id", protect, updateBook);
-router.delete("/:id", deleteBook);
+router.put("/:id", protect, upload.single("image"), updateBook);
+router.delete("/:id", protect, deleteBook);
 
 export default router;

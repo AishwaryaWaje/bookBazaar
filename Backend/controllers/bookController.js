@@ -57,10 +57,13 @@ export const updateBook = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized to update this book" });
     }
 
-    const update = { ...req.body };
-    if (req.file) {
-      update.image = req.file.path;
-    }
+    const update = {};
+    if (req.body.title) update.title = req.body.title;
+    if (req.body.author) update.author = req.body.author;
+    if (req.body.price) update.price = req.body.price;
+    if (req.body.genere) update.genere = req.body.genere;
+    if (req.body.condition) update.condition = req.body.condition;
+    if (req.file) update.image = req.file.path;
 
     const updated = await Book.findByIdAndUpdate(req.params.id, update, {
       new: true,
@@ -69,6 +72,7 @@ export const updateBook = async (req, res) => {
 
     res.status(200).json(updated);
   } catch (err) {
+    console.error("Update error:", err);
     res.status(500).json({ message: "Failed to update book", error: err.message });
   }
 };

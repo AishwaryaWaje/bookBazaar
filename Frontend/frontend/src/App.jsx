@@ -7,7 +7,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AddBook from "./pages/AddBook";
 import MyBooks from "./pages/MyBooks";
-import EditBook from "./pages/EditBook";
 import Wishlist from "./pages/Wishlist";
 import Messages from "./pages/Messages";
 
@@ -22,7 +21,6 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/add-book" element={<AddBook />} />
           <Route path="/my-books" element={<MyBooks />} />
-          <Route path="/edit-book/:id" element={<EditBook />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/wishlist" element={<Wishlist />} />
         </Routes>
