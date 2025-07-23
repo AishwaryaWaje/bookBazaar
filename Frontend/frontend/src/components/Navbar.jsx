@@ -44,7 +44,7 @@ const Navbar = () => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
 
     debounceTimer.current = setTimeout(() => {
-      const trimmed = searchTerm.trim();
+      const trimmed = searchTerm;
 
       if (location.pathname === "/login") return;
 
