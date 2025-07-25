@@ -9,6 +9,8 @@ import AddBook from "./pages/AddBook";
 import MyBooks from "./pages/MyBooks";
 import Wishlist from "./pages/Wishlist";
 import Messages from "./pages/Messages";
+import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 
 const App = () => {
   return (
@@ -23,6 +25,8 @@ const App = () => {
           <Route path="/my-books" element={<MyBooks />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/bookbazaar-admin" element={<AdminLogin />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </Layout>
     </Router>
