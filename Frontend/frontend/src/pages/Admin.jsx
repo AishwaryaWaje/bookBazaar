@@ -2,25 +2,19 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
-
+import { FiTrash2 } from "react-icons/fi";
 const API = "http://localhost:5000/api/admin";
 
-const fetchAllBooks = async (token) => {
-  return await axios.get(`${API}/books`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+const fetchAllBooks = async () => {
+  return await axios.get(`${API}/books`, { withCredentials: true });
 };
 
-const deleteBookAdmin = async (id, token) => {
-  return await axios.delete(`${API}/books/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+const deleteBookAdmin = async (id) => {
+  return await axios.delete(`${API}/books/${id}`, { withCredentials: true });
 };
 
-const fetchAnalytics = async (token) => {
-  return await axios.get(`${API}/analytics`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+const fetchAnalytics = async () => {
+  return await axios.get(`${API}/analytics`, { withCredentials: true });
 };
 
 export default function Admin() {
@@ -43,14 +37,7 @@ export default function Admin() {
 
   const loadData = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found");
-
-      const [resBooks, resAnalytics] = await Promise.all([
-        fetchAllBooks(token),
-        fetchAnalytics(token),
-      ]);
-
+      const [resBooks, resAnalytics] = await Promise.all([fetchAllBooks(), fetchAnalytics()]);
       setBooks(resBooks.data);
       setAnalytics(resAnalytics.data);
     } catch (err) {
@@ -65,8 +52,7 @@ export default function Admin() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this book?")) return;
     try {
-      const token = localStorage.getItem("token");
-      await deleteBookAdmin(id, token);
+      await deleteBookAdmin(id);
       setBooks((prev) => prev.filter((b) => b._id !== id));
     } catch (err) {
       console.error("Delete failed:", err.response?.data?.message || err.message);
@@ -83,8 +69,8 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
         <button
           onClick={handleLogout}
@@ -93,50 +79,42 @@ export default function Admin() {
         </button>
       </div>
 
-      {/* Analytics Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <div className="bg-white shadow p-4 rounded">
-          <p className="text-gray-600">Total Users</p>
-          <h2 className="text-2xl font-bold text-blue-600">{analytics.totalUsers}</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+        <div className="bg-white shadow-md p-6 rounded-lg border border-gray-200">
+          <p className="text-gray-500 text-sm mb-1">Total Users</p>
+          <h2 className="text-3xl font-bold text-blue-700">{analytics.totalUsers}</h2>
         </div>
-        <div className="bg-white shadow p-4 rounded">
-          <p className="text-gray-600">Total Books</p>
-          <h2 className="text-2xl font-bold text-green-600">{analytics.totalBooks}</h2>
+        <div className="bg-white shadow-md p-6 rounded-lg border border-gray-200">
+          <p className="text-gray-500 text-sm mb-1">Total Books</p>
+          <h2 className="text-3xl font-bold text-green-700">{analytics.totalBooks}</h2>
         </div>
       </div>
 
-      {/* Book Listings */}
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Book Listings</h2>
+      <h2 className="text-2xl font-semibold mb-5 text-gray-800">Book Listings</h2>
+
       {books.length === 0 ? (
-        <p className="text-gray-500">No book listings found.</p>
+        <div className="text-center text-gray-500 mt-10">
+          <p>No book listings found.</p>
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-200 bg-white shadow-sm">
-            <thead className="bg-gray-100 text-left">
-              <tr>
-                <th className="p-3 border">Title</th>
-                <th className="p-3 border">Author</th>
-                <th className="p-3 border">Listed By</th>
-                <th className="p-3 border text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {books.map((book) => (
-                <tr key={book._id} className="border-t">
-                  <td className="p-3 border">{book.title}</td>
-                  <td className="p-3 border">{book.author}</td>
-                  <td className="p-3 border">{book.listedBy?.username || "N/A"}</td>
-                  <td className="p-3 border text-center">
-                    <button
-                      onClick={() => handleDelete(book._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-4">
+          {books.map((book) => (
+            <div
+              key={book._id}
+              className="bg-white shadow rounded p-4 mb-3 flex justify-between items-center">
+              <p className="text-gray-700">
+                <span className="font-semibold">{book.title}</span> &nbsp; by {book.author} &nbsp; |
+                &nbsp; Listed by:{" "}
+                <span className="text-blue-600">{book.listedBy?.username || "N/A"}</span>
+              </p>
+              <button
+                onClick={() => handleDelete(book._id)}
+                className="text-red-600 hover:text-red-800 p-2 rounded transition"
+                title="Delete Book">
+                <FiTrash2 size={18} />
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

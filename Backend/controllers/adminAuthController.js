@@ -14,7 +14,6 @@ const generateAdminToken = (user) => {
   );
 };
 
-// Admin Login
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
 

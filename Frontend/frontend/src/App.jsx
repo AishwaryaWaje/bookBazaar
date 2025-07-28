@@ -11,24 +11,40 @@ import Wishlist from "./pages/Wishlist";
 import Messages from "./pages/Messages";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
+import RequireAdmin from "./pages/RequireAdmin";
 
 const App = () => {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<SearchResults />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/add-book" element={<AddBook />} />
-          <Route path="/my-books" element={<MyBooks />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/bookbazaar-admin" element={<AdminLogin />} />
-          <Route path="/admin" element={<Admin />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/bookbazaar-admin" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <RequireAdmin>
+              <Admin />
+            </RequireAdmin>
+          }
+        />
+
+        <Route
+          path="/*"
+          element={
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/add-book" element={<AddBook />} />
+                <Route path="/my-books" element={<MyBooks />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+              </Routes>
+            </Layout>
+          }
+        />
+      </Routes>
     </Router>
   );
 };

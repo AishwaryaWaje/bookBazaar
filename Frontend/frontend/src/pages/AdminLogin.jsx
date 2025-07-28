@@ -16,7 +16,7 @@ const AdminLogin = () => {
       const res = await axios.post(
         "http://localhost:5000/api/admin/login",
         { email, password },
-        { withCredentials: true } // Send and receive cookies
+        { withCredentials: true }
       );
 
       const user = res.data?.user;
@@ -24,10 +24,8 @@ const AdminLogin = () => {
         return setError("Access denied. Not an admin.");
       }
 
-      // Store user in localStorage
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Navigate to admin dashboard
       navigate("/admin");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
