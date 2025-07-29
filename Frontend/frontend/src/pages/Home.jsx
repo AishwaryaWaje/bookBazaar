@@ -7,6 +7,13 @@ import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import ChatModal from "../components/chat/ChatModel";
 import FiltersBar from "../components/Filterbar";
 
+const shuffleArray = (array) => {
+  return array
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+};
+
 const Home = () => {
   const [books, setBooks] = useState([]);
   const [wishlistIds, setWishlistIds] = useState(new Set());
@@ -28,7 +35,8 @@ const Home = () => {
         params: filters,
         withCredentials: true,
       });
-      setBooks(res.data);
+      const shuffled = shuffleArray(res.data);
+      setBooks(shuffled);
     } catch (err) {
       console.error("Error fetching books", err);
     } finally {
@@ -114,7 +122,7 @@ const Home = () => {
     } catch (err) {
       if (err.response && err.response.status !== 404) {
         console.error("Error checking conversation:", err.response.data);
-        alert("Unable to open chat. ");
+        alert("Unable to open chat.");
         return;
       }
     }
@@ -133,7 +141,7 @@ const Home = () => {
       setActiveChat({ book, conversationId: res.data._id });
     } catch (createErr) {
       console.error("Failed to create chat:", createErr.response?.data || createErr);
-      alert("You can't open this chat as you have posted this. ");
+      alert("You can't open this chat as you have posted this.");
     }
   };
 
