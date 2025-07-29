@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
 import { FiTrash2 } from "react-icons/fi";
+
 const API = "http://localhost:5000/api/admin";
 
 const fetchAllBooks = async () => {
@@ -21,6 +22,7 @@ export default function Admin() {
   const [books, setBooks] = useState([]);
   const [analytics, setAnalytics] = useState({ totalUsers: 0, totalBooks: 0 });
   const [user, setUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,6 +66,12 @@ export default function Admin() {
     navigate("/bookbazaar-admin");
   };
 
+  const filteredBooks = books.filter((book) => {
+    const titleMatch = book.title?.toLowerCase().includes(searchTerm.toLowerCase());
+    const authorMatch = book.author?.toLowerCase().includes(searchTerm.toLowerCase());
+    return titleMatch || authorMatch;
+  });
+
   if (!user) {
     return <p className="text-center mt-10 text-gray-600">Loading...</p>;
   }
@@ -90,15 +98,23 @@ export default function Admin() {
         </div>
       </div>
 
-      <h2 className="text-2xl font-semibold mb-5 text-gray-800">Book Listings</h2>
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search books by title or author..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+      </div>
 
-      {books.length === 0 ? (
+      {filteredBooks.length === 0 ? (
         <div className="text-center text-gray-500 mt-10">
           <p>No book listings found.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {books.map((book) => (
+          {filteredBooks.map((book) => (
             <div
               key={book._id}
               className="bg-white shadow rounded p-4 mb-3 flex justify-between items-center">
