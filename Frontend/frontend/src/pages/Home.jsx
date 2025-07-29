@@ -14,6 +14,8 @@ const shuffleArray = (array) => {
     .map(({ value }) => value);
 };
 
+const BOOKS_PER_PAGE = 28;
+
 const Home = () => {
   const [books, setBooks] = useState([]);
   const [wishlistIds, setWishlistIds] = useState(new Set());
@@ -25,6 +27,8 @@ const Home = () => {
     minPrice: "",
     maxPrice: "",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalBooks, setTotalBooks] = useState(0);
   const user = getCurrentUser();
   const navigate = useNavigate();
 
@@ -32,11 +36,16 @@ const Home = () => {
     setLoading(true);
     try {
       const res = await axios.get("http://localhost:5000/api/books", {
-        params: filters,
+        params: {
+          ...filters,
+          page: currentPage,
+          limit: BOOKS_PER_PAGE,
+        },
         withCredentials: true,
       });
-      const shuffled = shuffleArray(res.data);
+      const shuffled = shuffleArray(res.data.books);
       setBooks(shuffled);
+      setTotalBooks(res.data.total);
     } catch (err) {
       console.error("Error fetching books", err);
     } finally {
@@ -46,7 +55,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchBooks();
-  }, [filters]);
+  }, [filters, currentPage]);
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -145,6 +154,40 @@ const Home = () => {
     }
   };
 
+  const renderPagination = () => {
+    const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE);
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    const delta = 2;
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
+      }
+    }
+
+    return (
+      <div className="flex justify-center items-center mt-8 space-x-2">
+        {pages.map((page, index) => (
+          <button
+            key={index}
+            disabled={page === "..."}
+            className={`px-3 py-1 rounded-md border text-sm ${
+              page === currentPage
+                ? "bg-black text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+            onClick={() => typeof page === "number" && setCurrentPage(page)}>
+            {page}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   if (loading)
     return <div className="text-center py-10 text-xl font-semibold">Loading books...</div>;
 
@@ -204,6 +247,8 @@ const Home = () => {
             </div>
           )}
         </div>
+
+        {renderPagination()}
 
         {activeChat && (
           <ChatModal

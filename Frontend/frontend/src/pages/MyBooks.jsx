@@ -220,14 +220,19 @@ const MyBooks = () => {
               placeholder="Genre"
               className="w-full border px-3 py-2 rounded-lg"
             />
-            <input
-              type="text"
+            <select
               name="condition"
               value={formData.condition}
               onChange={handleInputChange}
-              placeholder="Condition"
-              className="w-full border px-3 py-2 rounded-lg"
-            />
+              className="w-full border px-3 py-2 rounded-lg">
+              <option value="">Select Condition</option>
+              <option value="Brand New">Brand New</option>
+              <option value="Like New">Like New</option>
+              <option value="Good">Good</option>
+              <option value="Acceptable">Acceptable</option>
+              <option value="Worn">Worn</option>
+              <option value="Damaged">Damaged</option>
+            </select>
 
             <input
               type="file"

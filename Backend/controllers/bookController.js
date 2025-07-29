@@ -1,8 +1,16 @@
 import Book from "../models/Book.js";
-
 export const getBooks = async (req, res) => {
   try {
-    const { title, author, genere, condition, minPrice, maxPrice } = req.query;
+    const {
+      title,
+      author,
+      genere,
+      condition,
+      minPrice,
+      maxPrice,
+      page = 1,
+      limit = 28,
+    } = req.query;
 
     const filters = {};
     if (title) filters.title = { $regex: title, $options: "i" };
@@ -15,8 +23,19 @@ export const getBooks = async (req, res) => {
       if (maxPrice) filters.price.$lte = Number(maxPrice);
     }
 
-    const books = await Book.find(filters).populate("listedBy", "username");
-    res.status(200).json(books);
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [books, total] = await Promise.all([
+      Book.find(filters).skip(skip).limit(Number(limit)).populate("listedBy", "username"),
+      Book.countDocuments(filters),
+    ]);
+
+    res.status(200).json({
+      books,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / Number(limit)),
+    });
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch books", error: err.message });
   }
