@@ -43,13 +43,16 @@ const Wishlist = () => {
     return <p className="text-center mt-10 text-lg text-red-500">Please login to view wishlist.</p>;
 
   if (loading)
-    return <p className="text-center mt-10 text-lg text-gray-500">Loading your wishlist...</p>;
+    return (
+      <div className="col-span-full text-center text-gray-500 text-sm py-8">
+        Loading your wishlist...
+      </div>
+    );
 
   const isEmpty = !wishlist || wishlist.length === 0;
 
   return (
     <div className="p-6">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">My Wishlist</h2>
       {isEmpty ? (
         <p className="text-gray-500">Your wishlist is empty.</p>
       ) : (

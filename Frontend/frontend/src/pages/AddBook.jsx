@@ -18,7 +18,6 @@ const AddBook = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Close on ESC key (optional)
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") navigate("/");
@@ -83,9 +82,7 @@ const AddBook = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      {/* Card */}
       <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-xl p-8">
-        {/* Cross / Close */}
         <button
           type="button"
           onClick={handleClose}
@@ -97,7 +94,6 @@ const AddBook = () => {
         <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">Add a New Book</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Title */}
           <div>
             <label className="block text-gray-700 mb-1">Title</label>
             <input
@@ -111,7 +107,6 @@ const AddBook = () => {
             />
           </div>
 
-          {/* Author */}
           <div>
             <label className="block text-gray-700 mb-1">Author</label>
             <input
@@ -125,7 +120,6 @@ const AddBook = () => {
             />
           </div>
 
-          {/* Genre */}
           <div>
             <label className="block text-gray-700 mb-1">Genre</label>
             <input
@@ -139,7 +133,6 @@ const AddBook = () => {
             />
           </div>
 
-          {/* Condition */}
           <div>
             <label className="block text-gray-700 mb-1">Condition</label>
             <select
@@ -158,7 +151,6 @@ const AddBook = () => {
             </select>
           </div>
 
-          {/* Price */}
           <div>
             <label className="block text-gray-700 mb-1">Price (₹)</label>
             <input
@@ -172,7 +164,6 @@ const AddBook = () => {
             />
           </div>
 
-          {/* Image Upload */}
           <div>
             <label className="block text-gray-700 mb-1">Upload Image</label>
             <input type="file" onChange={handleFileChange} accept="image/*" className="w-full" />
@@ -180,12 +171,11 @@ const AddBook = () => {
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="mt-4 w-full h-48 object-cover rounded-lg border"
+                className="mt-3 w-32 h-32 object-cover rounded-md border border-gray-300 shadow-sm"
               />
             )}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}

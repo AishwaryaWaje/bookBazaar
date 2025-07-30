@@ -115,7 +115,7 @@ const MyBooks = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-10 text-xl font-semibold text-gray-600">
+      <div className="col-span-full text-center text-gray-500 text-sm py-8">
         Loading your books...
       </div>
     );

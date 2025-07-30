@@ -60,7 +60,11 @@ const Messages = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-10 text-xl font-semibold">Loading conversations...</div>;
+    return (
+      <div className="col-span-full text-center text-gray-500 text-sm py-8">
+        Loading conversations...
+      </div>
+    );
   }
 
   return (
