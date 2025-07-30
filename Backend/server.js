@@ -18,7 +18,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "https://bookbazaar-8845qr32h-aishwarya-wajes-projects.vercel.app",
+    origin: "https://book-bazaar-eight.vercel.app",
     credentials: true,
   })
 );
@@ -36,7 +36,7 @@ app.use("/api/admin", adminRoutes);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://bookbazaar-8845qr32h-aishwarya-wajes-projects.vercel.app",
+    origin: "https://book-bazaar-eight.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   },
