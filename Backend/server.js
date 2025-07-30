@@ -18,7 +18,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "bookbazaar-8845qr32h-aishwarya-wajes-projects.vercel.app",
     credentials: true,
   })
 );
