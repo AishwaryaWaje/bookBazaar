@@ -70,7 +70,7 @@ const Messages = () => {
 
   return (
     <div className="p-4 relative">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Messages & Notifications</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">Messaging</h2>
 
       <div className="bg-white rounded-lg shadow divide-y">
         {conversations.length === 0 ? (
