@@ -75,7 +75,7 @@ const SearchResults = () => {
     return <div className="text-center py-10 text-gray-500">Start typing to search books...</div>;
 
   if (loading)
-    return <div className="text-center py-10 text-xl font-semibold">Searching “{query}”...</div>;
+    return <div className="text-center text-gray-500 text-sm py-8">Searching “{query}”...</div>;
 
   return (
     <div className="p-4">

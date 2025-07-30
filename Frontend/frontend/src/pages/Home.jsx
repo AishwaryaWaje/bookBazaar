@@ -8,6 +8,7 @@ import ChatModal from "../components/chat/ChatModel";
 import FiltersBar from "../components/Filterbar";
 
 const API = import.meta.env.VITE_API_URL;
+console.log(import.meta.env.VITE_API_URL);
 const shuffleArray = (array) => {
   return array
     .map((value) => ({ value, sort: Math.random() }))
@@ -62,7 +63,7 @@ const Home = () => {
     const fetchWishlist = async () => {
       if (!user) return;
       try {
-        const res = await axios.get(`${API}api/wishlist`, {
+        const res = await axios.get(`${API}/api/wishlist`, {
           withCredentials: true,
         });
         const ids = new Set(res.data.map((item) => item.book?._id));
