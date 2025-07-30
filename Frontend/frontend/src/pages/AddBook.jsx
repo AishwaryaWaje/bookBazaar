@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../utils/AuthUtils";
 
+const API = import.meta.env.VITE_API_URL;
 const AddBook = () => {
   const user = getCurrentUser();
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ const AddBook = () => {
       Object.entries(formData).forEach(([key, value]) => data.append(key, value));
       if (image) data.append("image", image);
 
-      await axios.post("http://localhost:5000/api/books", data, {
+      await axios.post(`${API}/api/books`, data, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });

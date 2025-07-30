@@ -1,13 +1,14 @@
 import { React, useEffect, useState } from "react";
 import axios from "axios";
 
+const API = import.meta.env.VITE_API_URL;
 const FiltersBar = ({ filters, setFilters }) => {
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/books/genres");
+        const res = await axios.get(`${API}/api/books/genres`);
         setGenres(res.data);
       } catch (err) {
         console.error("Failed to fetch genres", err);

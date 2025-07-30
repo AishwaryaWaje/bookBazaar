@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { getCurrentUser } from "../utils/AuthUtils";
 
+const API = import.meta.env.VITE_API_URL;
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +12,7 @@ const Wishlist = () => {
     if (!user) return;
     const fetchWishlist = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/wishlist", {
+        const res = await axios.get(`${API}/api/wishlist`, {
           withCredentials: true,
         });
         console.log("Wishlist API Response:", res.data);

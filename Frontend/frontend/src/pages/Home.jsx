@@ -7,6 +7,7 @@ import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import ChatModal from "../components/chat/ChatModel";
 import FiltersBar from "../components/Filterbar";
 
+const API = import.meta.env.VITE_API_URL;
 const shuffleArray = (array) => {
   return array
     .map((value) => ({ value, sort: Math.random() }))
@@ -35,7 +36,7 @@ const Home = () => {
   const fetchBooks = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/books", {
+      const res = await axios.get(`${API}/api/books`, {
         params: {
           ...filters,
           page: currentPage,
@@ -61,7 +62,7 @@ const Home = () => {
     const fetchWishlist = async () => {
       if (!user) return;
       try {
-        const res = await axios.get("http://localhost:5000/api/wishlist", {
+        const res = await axios.get(`${API}api/wishlist`, {
           withCredentials: true,
         });
         const ids = new Set(res.data.map((item) => item.book?._id));
@@ -81,7 +82,7 @@ const Home = () => {
 
     if (wishlistIds.has(bookId)) {
       try {
-        await axios.delete(`http://localhost:5000/api/wishlist/${bookId}`, {
+        await axios.delete(`${API}/api/wishlist/${bookId}`, {
           withCredentials: true,
         });
         setWishlistIds((prev) => {
@@ -94,11 +95,7 @@ const Home = () => {
       }
     } else {
       try {
-        await axios.post(
-          "http://localhost:5000/api/wishlist",
-          { bookId },
-          { withCredentials: true }
-        );
+        await axios.post(`${API}/api/wishlist`, { bookId }, { withCredentials: true });
         setWishlistIds((prev) => new Set(prev).add(bookId));
       } catch (err) {
         console.error("Error adding to wishlist", err);
@@ -120,7 +117,7 @@ const Home = () => {
     }
 
     try {
-      const existing = await axios.get(`http://localhost:5000/api/conversations/book/${book._id}`, {
+      const existing = await axios.get(`${API}/api/conversations/book/${book._id}`, {
         withCredentials: true,
       });
 
@@ -143,7 +140,7 @@ const Home = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/conversations",
+        `${API}/api/conversations`,
         { bookId: book._id },
         { withCredentials: true }
       );

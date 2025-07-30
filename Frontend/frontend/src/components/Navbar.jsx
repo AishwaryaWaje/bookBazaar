@@ -4,6 +4,7 @@ import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
 import socket from "../utils/Socket";
 import axios from "axios";
 
+const API = import.meta.env.VITE_API_URL;
 const DEBOUNCE_MS = 300;
 
 const Navbar = () => {
@@ -63,7 +64,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      await axios.post(`${API}/api/auth/logout`, {}, { withCredentials: true });
     } catch (err) {
       console.error("Logout failed", err);
     }

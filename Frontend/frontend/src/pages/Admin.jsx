@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
 import { FiTrash2 } from "react-icons/fi";
 
-const API = "http://localhost:5000/api/admin";
+const API = `${import.meta.env.VITE_ADMIN_API_URL}/api/admin`;
 
 const fetchAllBooks = async () => {
   return await axios.get(`${API}/books`, { withCredentials: true });

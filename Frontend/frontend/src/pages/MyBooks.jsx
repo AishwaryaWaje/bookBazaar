@@ -3,6 +3,7 @@ import axios from "axios";
 import { getCurrentUser } from "../utils/AuthUtils";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
+const API = import.meta.env.VITE_API_URL;
 const MyBooks = () => {
   const [user] = useState(getCurrentUser());
   const [books, setBooks] = useState([]);
@@ -21,7 +22,7 @@ const MyBooks = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/books/mine", {
+      const res = await axios.get(`${API}/api/books/mine`, {
         withCredentials: true,
       });
       setBooks(res.data || []);
@@ -39,7 +40,7 @@ const MyBooks = () => {
   const handleDeleteBook = async (bookId) => {
     if (!window.confirm("Are you sure you want to delete this book?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/books/${bookId}`, {
+      await axios.delete(`${API}/api/books/${bookId}`, {
         withCredentials: true,
       });
 
@@ -60,7 +61,7 @@ const MyBooks = () => {
       condition: book.condition,
       image: null,
     });
-    setPreviewImage(book.image || "/default-book.jpg");
+    setPreviewImage(book.image);
   };
 
   const closeEditModal = () => {
@@ -98,7 +99,7 @@ const MyBooks = () => {
         if (formData[key] !== null) form.append(key, formData[key]);
       });
 
-      const res = await axios.put(`http://localhost:5000/api/books/${editingBook._id}`, form, {
+      const res = await axios.put(`${API}/api/books/${editingBook._id}`, form, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });

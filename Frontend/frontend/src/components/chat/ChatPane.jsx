@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
-
 import socket from "../../utils/Socket";
 
+const API = import.meta.env.VITE_API_URL;
 const idToStr = (val) => (val?._id ? String(val._id) : val ? String(val) : "");
 
 const ChatPane = ({ conversationId, currentUser }) => {
@@ -16,10 +16,9 @@ const ChatPane = ({ conversationId, currentUser }) => {
     if (!conversationId) return;
     const loadMessages = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/conversations/${conversationId}/messages`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`${API}/api/conversations/${conversationId}/messages`, {
+          withCredentials: true,
+        });
         setMessages(res.data || []);
       } catch (err) {
         console.error("Failed to load messages", err);
@@ -67,7 +66,7 @@ const ChatPane = ({ conversationId, currentUser }) => {
 
       try {
         const res = await axios.post(
-          `http://localhost:5000/api/conversations/${conversationId}/messages`,
+          `${API}/api/conversations/${conversationId}/messages`,
           { text },
           { withCredentials: true }
         );

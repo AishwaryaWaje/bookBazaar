@@ -4,6 +4,7 @@ import { getCurrentUser } from "../utils/AuthUtils";
 import ChatPane from "../components/chat/ChatPane";
 import { useNavigate } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_URL;
 const getOtherParticipant = (convo, currentUserId) => {
   if (!convo?.participants?.length) return null;
   return convo.participants.find((p) => p._id !== currentUserId) || null;
@@ -30,7 +31,7 @@ const Messages = () => {
     if (!user) return;
     const fetchConversations = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/conversations", {
+        const res = await axios.get(`${API}/api/conversations`, {
           withCredentials: true,
         });
 

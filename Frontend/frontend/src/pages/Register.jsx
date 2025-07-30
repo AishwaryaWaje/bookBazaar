@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_URL;
 const Register = () => {
   const [inputs, setInputs] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -18,14 +19,12 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", inputs, {
+      const res = await axios.post(`${API}/api/auth/register`, inputs, {
         withCredentials: true,
       });
 
-      // Save the user object from response in localStorage
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // Redirect to home and reload to update navbar
       navigate("/");
       window.location.reload();
     } catch (err) {

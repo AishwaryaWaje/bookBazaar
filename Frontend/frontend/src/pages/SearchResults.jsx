@@ -5,6 +5,7 @@ import { getCurrentUser } from "../utils/AuthUtils";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
+const API = import.meta.env.VITE_API_URL;
 const SearchResults = () => {
   const location = useLocation();
   const query = new URLSearchParams(location.search).get("q") || "";
@@ -17,7 +18,7 @@ const SearchResults = () => {
     if (!user) return;
     (async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/wishlist", {
+        const res = await axios.get(`${API}/api/wishlist`, {
           withCredentials: true,
         });
         setWishlistIds(res.data.map((item) => item.book._id));
@@ -37,10 +38,10 @@ const SearchResults = () => {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/books/search?q=${encodeURIComponent(query)}`,
-          { withCredentials: true, signal: controller.signal }
-        );
+        const res = await axios.get(`${API}/api/books/search?q=${encodeURIComponent(query)}`, {
+          withCredentials: true,
+          signal: controller.signal,
+        });
         setBooks(res.data);
       } catch (err) {
         if (err.name !== "CanceledError") console.error("Error fetching search results", err);
@@ -57,16 +58,12 @@ const SearchResults = () => {
     if (!user) return alert("Please login to manage wishlist.");
     try {
       if (wishlistIds.includes(bookId)) {
-        await axios.delete(`http://localhost:5000/api/wishlist/${bookId}`, {
+        await axios.delete(`${API}/api/wishlist/${bookId}`, {
           withCredentials: true,
         });
         setWishlistIds((prev) => prev.filter((id) => id !== bookId));
       } else {
-        await axios.post(
-          "http://localhost:5000/api/wishlist",
-          { bookId },
-          { withCredentials: true }
-        );
+        await axios.post(`${API}/api/wishlist`, { bookId }, { withCredentials: true });
         setWishlistIds((prev) => [...prev, bookId]);
       }
     } catch (err) {

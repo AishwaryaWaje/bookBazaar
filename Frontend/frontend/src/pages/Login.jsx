@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import socket from "../utils/Socket";
 
+const API = import.meta.env.VITE_API_URL;
 const Login = () => {
   const [inputs, setInputs] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -15,7 +16,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", inputs, {
+      const res = await axios.post(`${API}/api/auth/login`, inputs, {
         withCredentials: true,
       });
       localStorage.setItem("user", JSON.stringify(res.data.user));
