@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
+import { getAdminUser, logoutAdmin } from "../utils/AuthUtils";
 import { FiTrash2, FiEdit3 } from "react-icons/fi";
 
 const API = `${import.meta.env.VITE_ADMIN_API_URL}/api/admin`;
@@ -33,7 +33,7 @@ export default function Admin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const u = getCurrentUser();
+    const u = getAdminUser();
     setUser(u);
     if (!u || !u.isAdmin) {
       navigate("/bookbazaar-admin");
@@ -50,7 +50,7 @@ export default function Admin() {
     } catch (err) {
       console.error("Admin load error:", err.response?.data?.message || err.message);
       if (err.response?.status === 401) {
-        logoutUser();
+        logoutAdmin();
         navigate("/bookbazaar-admin");
       }
     }
@@ -87,7 +87,7 @@ export default function Admin() {
   };
 
   const handleLogout = () => {
-    logoutUser();
+    logoutAdmin();
     navigate("/bookbazaar-admin");
   };
 
