@@ -13,6 +13,7 @@ import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import RequireAdmin from "./pages/RequireAdmin";
 import { getAdminUser } from "./utils/AuthUtils";
+import { Navigate } from "react-router-dom";
 
 const App = () => {
   const isAdmin = getAdminUser();
