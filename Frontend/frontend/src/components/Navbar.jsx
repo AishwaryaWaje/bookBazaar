@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
+import { getCurrentUser, logoutUser, getAdminUser } from "../utils/AuthUtils";
 import socket from "../utils/Socket";
 import axios from "axios";
 
@@ -11,6 +11,7 @@ const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [user, setUser] = useState(getCurrentUser());
+  const admin = getAdminUser();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -102,6 +103,8 @@ const Navbar = () => {
       setIsSearchActive(true);
     }
   };
+
+  if (admin) return null;
 
   return (
     <nav className="sticky top-0 z-50 bg-black text-white px-4 py-3 flex items-center justify-between w-full">

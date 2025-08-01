@@ -25,7 +25,7 @@ const AdminLogin = () => {
         return setError("Access denied. Not an admin.");
       }
 
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("admin", JSON.stringify(user));
 
       navigate("/admin");
     } catch (err) {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "../utils/AuthUtils";
-import { FiTrash2 } from "react-icons/fi";
+import { FiTrash2, FiEdit3 } from "react-icons/fi";
 
 const API = `${import.meta.env.VITE_ADMIN_API_URL}/api/admin`;
 
@@ -18,22 +18,27 @@ const fetchAnalytics = async () => {
   return await axios.get(`${API}/analytics`, { withCredentials: true });
 };
 
+const updateBook = async (id, updatedData) => {
+  return await axios.put(`${API}/books/${id}`, updatedData, { withCredentials: true });
+};
+
 export default function Admin() {
   const [books, setBooks] = useState([]);
   const [analytics, setAnalytics] = useState({ totalUsers: 0, totalBooks: 0 });
   const [user, setUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingBookId, setEditingBookId] = useState(null);
+  const [editData, setEditData] = useState({ title: "", author: "", genre: "" });
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const u = getCurrentUser();
     setUser(u);
-
     if (!u || !u.isAdmin) {
       navigate("/bookbazaar-admin");
       return;
     }
-
     loadData();
   }, []);
 
@@ -59,6 +64,26 @@ export default function Admin() {
     } catch (err) {
       console.error("Delete failed:", err.response?.data?.message || err.message);
     }
+  };
+
+  const startEditing = (book) => {
+    setEditingBookId(book._id);
+    setEditData({ title: book.title, author: book.author, genre: book.genere || "" });
+  };
+
+  const saveEdit = async () => {
+    try {
+      await updateBook(editingBookId, editData);
+      setEditingBookId(null);
+      loadData();
+    } catch (err) {
+      console.error("Update failed:", err.response?.data?.message || err.message);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingBookId(null);
+    setEditData({ title: "", author: "", genre: "" });
   };
 
   const handleLogout = () => {
@@ -117,18 +142,61 @@ export default function Admin() {
           {filteredBooks.map((book) => (
             <div
               key={book._id}
-              className="bg-white shadow rounded p-4 mb-3 flex justify-between items-center">
-              <p className="text-gray-700">
-                <span className="font-semibold">{book.title}</span> &nbsp; by {book.author} &nbsp; |
-                &nbsp; Listed by:{" "}
-                <span className="text-blue-600">{book.listedBy?.username || "N/A"}</span>
-              </p>
-              <button
-                onClick={() => handleDelete(book._id)}
-                className="text-red-600 hover:text-red-800 p-2 rounded transition"
-                title="Delete Book">
-                <FiTrash2 size={18} />
-              </button>
+              className="bg-white shadow rounded p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
+              {editingBookId === book._id ? (
+                <div className="w-full">
+                  <input
+                    className="border p-1 rounded mb-2 w-full"
+                    value={editData.title}
+                    onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                    placeholder="Title"
+                  />
+                  <input
+                    className="border p-1 rounded mb-2 w-full"
+                    value={editData.author}
+                    onChange={(e) => setEditData({ ...editData, author: e.target.value })}
+                    placeholder="Author"
+                  />
+                  <input
+                    className="border p-1 rounded w-full"
+                    value={editData.genre}
+                    onChange={(e) => setEditData({ ...editData, genre: e.target.value })}
+                    placeholder="Genre"
+                  />
+                  <div className="mt-2 flex gap-2">
+                    <button onClick={saveEdit} className="bg-blue-600 text-white px-3 py-1 rounded">
+                      Save
+                    </button>
+                    <button
+                      onClick={cancelEdit}
+                      className="bg-gray-400 text-white px-3 py-1 rounded">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="text-gray-700 flex-1">
+                    <span className="font-semibold">{book.title}</span> &nbsp; by {book.author}{" "}
+                    &nbsp; | &nbsp; Listed by:{" "}
+                    <span className="text-blue-600">{book.listedBy?.username || "N/A"}</span>
+                  </p>
+                  <div className="flex gap-2 items-center">
+                    <button
+                      onClick={() => startEditing(book)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Edit Book">
+                      <FiEdit3 size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(book._id)}
+                      className="text-red-600 hover:text-red-800"
+                      title="Delete Book">
+                      <FiTrash2 size={18} />
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>

@@ -7,3 +7,13 @@ export const logoutUser = () => {
   localStorage.removeItem("user");
   localStorage.removeItem("token");
 };
+
+export const getAdminUser = () => {
+  const admin = localStorage.getItem("admin");
+  return admin ? JSON.parse(admin) : null;
+};
+
+export const logoutAdmin = () => {
+  localStorage.removeItem("admin");
+  localStorage.removeItem("token");
+};
