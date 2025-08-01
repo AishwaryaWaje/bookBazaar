@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { getCurrentUser } from "../utils/AuthUtils";
+import { getAdminUser } from "../utils/AuthUtils";
 
 const RequireAdmin = ({ children }) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [redirect, setRedirect] = useState(false);
-  const user = getCurrentUser();
+  const user = getAdminUser;
 
   useEffect(() => {
     if (!user || !user.isAdmin) {
