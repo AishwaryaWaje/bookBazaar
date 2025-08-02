@@ -5,14 +5,14 @@ import { getAdminUser } from "../utils/AuthUtils";
 const RequireAdmin = ({ children }) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [redirect, setRedirect] = useState(false);
-  const user = getAdminUser;
+  const user = getAdminUser();
 
   useEffect(() => {
     if (!user || !user.isAdmin) {
       setUnauthorized(true);
       const timeout = setTimeout(() => {
         setRedirect(true);
-      }, 8000);
+      }, 3000);
 
       return () => clearTimeout(timeout);
     }

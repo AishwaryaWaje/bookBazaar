@@ -12,11 +12,8 @@ import Messages from "./pages/Messages";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import RequireAdmin from "./pages/RequireAdmin";
-import { getAdminUser } from "./utils/AuthUtils";
-import { Navigate } from "react-router-dom";
 
 const App = () => {
-  const isAdmin = getAdminUser();
   return (
     <Router>
       <Routes>
@@ -33,22 +30,18 @@ const App = () => {
         <Route
           path="/*"
           element={
-            isAdmin ? (
-              <Navigate to="/admin" replace />
-            ) : (
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/search" element={<SearchResults />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/add-book" element={<AddBook />} />
-                  <Route path="/my-books" element={<MyBooks />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                </Routes>
-              </Layout>
-            )
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/add-book" element={<AddBook />} />
+                <Route path="/my-books" element={<MyBooks />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+              </Routes>
+            </Layout>
           }
         />
       </Routes>
