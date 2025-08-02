@@ -1,63 +1,60 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
+
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await axios.post(
-        `${API}/api/admin/login`,
-        { email, password },
-        { withCredentials: true }
-      );
+      const res = await axios.post(`${API}/api/admin/login`, { email, password });
+      const { user, token } = res.data;
 
-      const user = res.data?.user;
-      if (!user || !user.isAdmin) {
-        return setError("Access denied. Not an admin.");
+      if (user.isAdmin) {
+        localStorage.setItem("admin", JSON.stringify(user));
+        localStorage.setItem("token", token);
+        navigate("/admin");
+      } else {
+        setError("Access denied. Not an admin.");
       }
-
-      localStorage.setItem("admin", JSON.stringify(user));
-
-      navigate("/admin");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      console.error(err);
+      setError("Invalid credentials or server error");
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-80">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Admin Login</h2>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+      <h2 className="text-2xl font-semibold mb-4">Admin Login</h2>
+      <form
+        onSubmit={handleLogin}
+        className="w-full max-w-sm space-y-4 bg-white p-6 rounded shadow">
         <input
           type="email"
           placeholder="Admin Email"
-          className="w-full p-2 mb-3 border rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full border px-4 py-2 rounded"
+          required
         />
-
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 mb-4 border rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full border px-4 py-2 rounded"
+          required
         />
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700">
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
           Login
         </button>
       </form>
