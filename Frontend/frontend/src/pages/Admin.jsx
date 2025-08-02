@@ -1,152 +1,203 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, Navigate } from "react-router-dom";
-import { logoutAdmin, getAdminUser } from "../utils/AuthUtils";
-import { FiTrash2 } from "react-icons/fi";
+import { FiTrash2, FiEdit, FiSave, FiX } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../utils/AuthUtils";
 
-const API = `${import.meta.env.VITE_API_URL}/api/admin`;
+const API = import.meta.env.VITE_API_URL;
 
 const Admin = () => {
   const [books, setBooks] = useState([]);
-  const [editId, setEditId] = useState(null);
-  const [editData, setEditData] = useState({ title: "", author: "", genre: "" });
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [analytics, setAnalytics] = useState({ totalUsers: 0, totalBooks: 0 });
+  const [editingBookId, setEditingBookId] = useState(null);
+  const [editedBook, setEditedBook] = useState({ title: "", author: "", genere: "" });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 100;
   const navigate = useNavigate();
-  const admin = getAdminUser();
 
   useEffect(() => {
-    if (!admin || !admin.isAdmin) {
-      navigate("/bookbazaar-admin", { replace: true });
-    } else {
-      fetchAllBooks();
-    }
+    fetchBooks();
+    fetchAnalytics();
   }, []);
 
-  const fetchAllBooks = async () => {
-    try {
-      const res = await axios.get(`${API}/books`, { withCredentials: true });
-      setBooks(res.data);
-    } catch (err) {
-      console.error("Failed to fetch books:", err);
-    }
+  useEffect(() => {
+    const filtered = books.filter((book) =>
+      book.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredBooks(filtered);
+    setCurrentPage(1); // Reset to first page on new search
+  }, [searchQuery, books]);
+
+  const fetchBooks = async () => {
+    const res = await axios.get(`${API}/api/admin/books`, { withCredentials: true });
+    setBooks(res.data);
+    setFilteredBooks(res.data);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${API}/books/${id}`, { withCredentials: true });
-      setBooks(books.filter((book) => book._id !== id));
-    } catch (err) {
-      console.error("Failed to delete book:", err);
-    }
+  const fetchAnalytics = async () => {
+    const res = await axios.get(`${API}/api/admin/analytics`, { withCredentials: true });
+    setAnalytics(res.data);
   };
 
-  const handleEdit = async (id) => {
-    try {
-      await axios.put(`${API}/books/${id}`, editData, { withCredentials: true });
-      setEditId(null);
-      setEditData({ title: "", author: "", genre: "" });
-      fetchAllBooks();
-    } catch (err) {
-      console.error("Failed to update book:", err);
-    }
+  const handleDelete = async (bookId) => {
+    await axios.delete(`${API}/api/admin/books/${bookId}`, { withCredentials: true });
+    fetchBooks();
   };
 
-  const startEditing = (book) => {
-    setEditId(book._id);
-    setEditData({
+  const handleEdit = (book) => {
+    setEditingBookId(book._id);
+    setEditedBook({
       title: book.title,
       author: book.author,
-      genre: book.genre || book.genere || "",
+      genere: book.genere || "",
     });
   };
 
-  const cancelEdit = () => {
-    setEditId(null);
-    setEditData({ title: "", author: "", genre: "" });
+  const handleSave = async (bookId) => {
+    await axios.put(`${API}/api/admin/books/${bookId}`, editedBook, { withCredentials: true });
+    setEditingBookId(null);
+    fetchBooks();
   };
 
   const handleLogout = () => {
-    logoutAdmin();
-    navigate("/bookbazaar-admin");
+    logoutUser();
+    navigate("/admin-login");
   };
 
-  if (!admin || !admin.isAdmin) return <Navigate to="/bookbazaar-admin" replace />;
+  const indexOfLast = currentPage * booksPerPage;
+  const indexOfFirst = indexOfLast - booksPerPage;
+  const currentBooks = filteredBooks.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
+    <div className="min-h-screen p-6 bg-gray-100">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-700">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <button
           onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
           Logout
         </button>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-gray-500">Total Users</p>
+          <p className="text-3xl font-bold text-blue-600">{analytics.totalUsers}</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-gray-500">Total Books</p>
+          <p className="text-3xl font-bold text-green-600">{analytics.totalBooks}</p>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search books by title..."
+          className="w-full p-2 border rounded shadow-sm"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      <h2 className="text-xl font-semibold mb-4">Book Listings</h2>
       <div className="space-y-4">
-        {books.map((book) => (
+        {currentBooks.map((book) => (
           <div
             key={book._id}
-            className="bg-white rounded-xl shadow p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            {editId === book._id ? (
-              <div className="flex flex-col sm:flex-row gap-2 w-full">
-                <input
-                  type="text"
-                  value={editData.title}
-                  onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                  className="border p-2 rounded w-full sm:w-auto"
-                  placeholder="Title"
-                />
-                <input
-                  type="text"
-                  value={editData.author}
-                  onChange={(e) => setEditData({ ...editData, author: e.target.value })}
-                  className="border p-2 rounded w-full sm:w-auto"
-                  placeholder="Author"
-                />
-                <input
-                  type="text"
-                  value={editData.genre}
-                  onChange={(e) => setEditData({ ...editData, genre: e.target.value })}
-                  className="border p-2 rounded w-full sm:w-auto"
-                  placeholder="Genre"
-                />
-                <button
-                  onClick={() => handleEdit(book._id)}
-                  className="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600">
-                  Save
-                </button>
-                <button
-                  onClick={cancelEdit}
-                  className="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500">
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full">
-                <div className="text-gray-800 space-x-4">
-                  <span className="font-semibold">{book.title}</span>
-                  <span className="text-sm text-gray-500">by {book.author}</span>
-                  <span className="text-sm text-gray-500">
-                    | Genre: {book.genre || book.genere || "N/A"}
+            className="bg-white p-4 rounded shadow flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex-1 space-y-1">
+              {editingBookId === book._id ? (
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    value={editedBook.title}
+                    onChange={(e) => setEditedBook({ ...editedBook, title: e.target.value })}
+                    className="w-full p-1 border rounded"
+                  />
+                  <input
+                    type="text"
+                    value={editedBook.author}
+                    onChange={(e) => setEditedBook({ ...editedBook, author: e.target.value })}
+                    className="w-full p-1 border rounded"
+                  />
+                  <input
+                    type="text"
+                    value={editedBook.genere}
+                    onChange={(e) => setEditedBook({ ...editedBook, genere: e.target.value })}
+                    className="w-full p-1 border rounded"
+                  />
+                </div>
+              ) : (
+                <p>
+                  <strong>{book.title}</strong> by {book.author}{" "}
+                  {book.genere && (
+                    <>
+                      | <span className="text-gray-600">{book.genere}</span>
+                    </>
+                  )}{" "}
+                  |
+                  <span className="text-sm text-blue-600 ml-2">
+                    Listed by: {book.listedBy?.username}
                   </span>
-                </div>
-                <div className="flex gap-2 mt-2 sm:mt-0">
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-3 mt-2 sm:mt-0">
+              {editingBookId === book._id ? (
+                <>
                   <button
-                    onClick={() => startEditing(book)}
-                    className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600">
-                    Edit
+                    onClick={() => handleSave(book._id)}
+                    className="text-green-600 hover:text-green-800">
+                    <FiSave size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(book._id)}
-                    className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">
-                    <FiTrash2 />
+                    onClick={() => setEditingBookId(null)}
+                    className="text-gray-600 hover:text-gray-800">
+                    <FiX size={18} />
                   </button>
-                </div>
-              </div>
-            )}
+                </>
+              ) : (
+                <button
+                  onClick={() => handleEdit(book)}
+                  className="text-blue-600 hover:text-blue-800">
+                  <FiEdit size={18} />
+                </button>
+              )}
+              <button
+                onClick={() => handleDelete(book._id)}
+                className="text-red-600 hover:text-red-800">
+                <FiTrash2 size={18} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center mt-6 gap-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="px-4 py-1 bg-gray-300 hover:bg-gray-400 rounded"
+            disabled={currentPage === 1}>
+            Previous
+          </button>
+          <span className="text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            className="px-4 py-1 bg-gray-300 hover:bg-gray-400 rounded"
+            disabled={currentPage === totalPages}>
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
