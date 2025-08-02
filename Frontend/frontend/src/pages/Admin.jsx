@@ -28,7 +28,7 @@ const Admin = () => {
       book.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredBooks(filtered);
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1);
   }, [searchQuery, books]);
 
   const fetchBooks = async () => {
@@ -178,7 +178,6 @@ const Admin = () => {
         ))}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center mt-6 gap-4">
           <button
