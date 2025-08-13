@@ -21,7 +21,7 @@ const AdminLogin = () => {
       if (user.isAdmin) {
         localStorage.setItem("admin", JSON.stringify(user));
         localStorage.setItem("token", token);
-        navigate("/admin");
+        navigate("/api/admin");
       } else {
         setError("Access denied. Not an admin.");
       }

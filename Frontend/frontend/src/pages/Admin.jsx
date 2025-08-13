@@ -64,7 +64,7 @@ const Admin = () => {
 
   const handleLogout = () => {
     logoutUser();
-    navigate("/admin-login");
+    navigate("/");
   };
 
   const indexOfLast = currentPage * booksPerPage;
