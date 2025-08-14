@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiTrash2, FiEdit, FiSave, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { logoutUser } from "../utils/AuthUtils";
+import { logoutAdmin, getToken } from "../utils/AuthUtils";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -14,10 +14,13 @@ const Admin = () => {
   const [editedBook, setEditedBook] = useState({});
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const token = getToken();
+
+  const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get(`${API}/api/admin/books`, { withCredentials: true });
+      const res = await axios.get(`${API}/api/admin/books`, authHeaders);
       setBooks(res.data);
       setFilteredBooks(res.data);
     } catch (err) {
@@ -27,7 +30,7 @@ const Admin = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const res = await axios.get(`${API}/api/admin/analytics`, { withCredentials: true });
+      const res = await axios.get(`${API}/api/admin/analytics`, authHeaders);
       setAnalytics(res.data);
     } catch (err) {
       console.error(err);
@@ -36,7 +39,7 @@ const Admin = () => {
 
   const handleDelete = async (bookId) => {
     try {
-      await axios.delete(`${API}/api/admin/books/${bookId}`, { withCredentials: true });
+      await axios.delete(`${API}/api/admin/books/${bookId}`, authHeaders);
       fetchBooks();
     } catch (err) {
       console.error(err);
@@ -45,7 +48,7 @@ const Admin = () => {
 
   const handleSave = async (bookId) => {
     try {
-      await axios.put(`${API}/api/admin/books/${bookId}`, editedBook, { withCredentials: true });
+      await axios.put(`${API}/api/admin/books/${bookId}`, editedBook, authHeaders);
       setEditingBookId(null);
       fetchBooks();
     } catch (err) {
@@ -66,14 +69,18 @@ const Admin = () => {
   };
 
   const handleLogout = () => {
-    logoutUser();
-    navigate("/admin-login");
+    logoutAdmin();
+    navigate("/bookbazaar-admin");
   };
 
   useEffect(() => {
+    if (!token) {
+      navigate("/bookbazaar-admin");
+      return;
+    }
     fetchBooks();
     fetchAnalytics();
-  }, []);
+  }, [token]);
 
   return (
     <div className="p-4">

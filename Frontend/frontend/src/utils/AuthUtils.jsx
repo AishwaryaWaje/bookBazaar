@@ -17,3 +17,7 @@ export const logoutAdmin = () => {
   localStorage.removeItem("admin");
   localStorage.removeItem("token");
 };
+
+export const getToken = () => {
+  return localStorage.getItem("token") || null;
+};
