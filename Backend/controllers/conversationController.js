@@ -73,3 +73,27 @@ export const getUserConversations = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch conversations", error: e.message });
   }
 };
+
+export const deleteConversation = async (req, res) => {
+  const userId = req.user?.userId;
+  const { id } = req.params;
+
+  if (!userId) {
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+
+  try {
+    const conversation = await Conversation.findOne({ _id: id, participants: userId });
+    if (!conversation) {
+      return res.status(404).json({ message: "Conversation not found or access denied" });
+    }
+    await Conversation.findByIdAndDelete(id);
+
+    await Message.deleteMany({ conversationId: id });
+
+    res.status(200).json({ message: "Conversation deleted successfully" });
+  } catch (e) {
+    console.error("deleteConversation error:", e);
+    res.status(500).json({ message: "Failed to delete conversation", error: e.message });
+  }
+};
