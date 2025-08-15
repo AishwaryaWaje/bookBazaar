@@ -37,7 +37,7 @@ app.use("/api/admin", adminRoutes);
 const io = new Server(server, {
   cors: {
     origin: "https://book-bazaar-eight.vercel.app",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "DELETE"],
     credentials: true,
   },
 });
