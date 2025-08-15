@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getCurrentUser } from "../utils/AuthUtils";
+import { getCurrentUser, getToken } from "../utils/AuthUtils";
 import ChatPane from "../components/chat/ChatPane";
 import { useNavigate } from "react-router-dom";
 import { FiTrash2 } from "react-icons/fi";
@@ -11,6 +11,7 @@ const getOtherParticipant = (convo, currentUserId) => {
   if (!convo?.participants?.length) return null;
   return convo.participants.find((p) => p._id !== currentUserId) || null;
 };
+
 const getPreviewText = (convo) =>
   convo?.lastMessage?.trim() ? convo.lastMessage : "No messages yet — start the conversation!";
 
@@ -27,7 +28,12 @@ const Messages = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`${API}/api/conversations/${id}`, { withCredentials: true });
+      await axios.delete(`${API}/api/conversations/${id}`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
       setConversations(conversations.filter((c) => c._id !== id));
     } catch (err) {
       console.error("Error deleting conversation", err);
@@ -44,7 +50,9 @@ const Messages = () => {
     if (!user) return;
     const fetchConversations = async () => {
       try {
-        const res = await axios.get(`${API}/api/conversations`, { withCredentials: true });
+        const res = await axios.get(`${API}/api/conversations`, {
+          withCredentials: true,
+        });
         const filtered = (res.data || []).filter(
           (convo) => convo.lastMessage && convo.lastMessage.trim() !== ""
         );
@@ -62,6 +70,7 @@ const Messages = () => {
     const other = getOtherParticipant(convo, user._id);
     setActiveChat({ convo, otherUser: other });
   };
+
   const closeChat = () => setActiveChat(null);
 
   const handleViewBook = (bookId) => {
@@ -91,7 +100,7 @@ const Messages = () => {
             return (
               <div
                 key={convo._id}
-                className="p-4 hover:bg-gray-50 flex  items-center justify-between gap-2">
+                className="p-4 hover:bg-gray-50 flex items-center justify-between gap-2">
                 <div className="flex-1 cursor-pointer" onClick={() => openChat(convo)}>
                   <div className="text-sm text-gray-800">
                     You have messages from{" "}
