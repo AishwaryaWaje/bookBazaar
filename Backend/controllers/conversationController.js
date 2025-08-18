@@ -83,7 +83,7 @@ export const deleteConversation = async (req, res) => {
   }
 
   try {
-    const conversation = await Conversation.findById({ id });
+    const conversation = await Conversation.findById(id);
     if (!conversation) {
       return res.status(404).json({ message: "Conversation not found" });
     }
