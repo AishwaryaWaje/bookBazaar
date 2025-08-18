@@ -83,9 +83,14 @@ export const deleteConversation = async (req, res) => {
   }
 
   try {
-    const conversation = await Conversation.findOne({ _id: id, participants: userId });
+    const conversation = await Conversation.findById({ id });
     if (!conversation) {
-      return res.status(404).json({ message: "Conversation not found or access denied" });
+      return res.status(404).json({ message: "Conversation not found" });
+    }
+
+    const isParticipant = conversation.participants.some((p) => p.equals(userId));
+    if (!isParticipant) {
+      return res.status(403).json({ message: "Access denied" });
     }
     await Conversation.findByIdAndDelete(id);
 
