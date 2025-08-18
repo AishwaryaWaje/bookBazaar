@@ -11,7 +11,7 @@ const router = express.Router();
 router.post("/", protect, getOrCreateConversation);
 router.get("/", protect, getUserConversations);
 router.get("/user", protect, getUserConversations);
-router.delete("/conversations/:id", protect, deleteConversation);
+router.delete("/:id", protect, deleteConversation);
 router.get("/:conversationId/messages", protect, getMessages);
 router.post("/:conversationId/messages", protect, sendMessage);
 
