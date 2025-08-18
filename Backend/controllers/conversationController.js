@@ -83,14 +83,12 @@ export const deleteConversation = async (req, res) => {
   }
 
   try {
-    const conversation = await Conversation.findOne({ _id: id, participants: userId });
+    const conversation = await Conversation.findById({ id });
     if (!conversation) {
-      return res.status(404).json({ message: "Conversation not found or access denied" });
+      return res.status(404).json({ message: "Conversation not found" });
     }
     await Conversation.findByIdAndDelete(id);
-
     await Message.deleteMany({ conversationId: id });
-
     res.status(200).json({ message: "Conversation deleted successfully" });
   } catch (e) {
     console.error("deleteConversation error:", e);
