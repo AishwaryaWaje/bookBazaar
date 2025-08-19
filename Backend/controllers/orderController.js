@@ -1,5 +1,5 @@
-import Order from "../models/Order";
-import Book from "../models/Book";
+import Order from "../models/Order.js";
+import Book from "../models/Book.js";
 
 export const placeOrder = async (req, res) => {
   const { bookId } = req.body;
