@@ -1,7 +1,32 @@
+import axios from "axios";
 import BookPreviewPane from "./BookPreviewPane";
 import ChatPane from "./ChatPane";
+import { useNavigate } from "react-router-dom";
+import { getToken } from "../utils/AuthUtils";
+
+const API = import.meta.env.VITE_API_URL;
 
 const ChatModal = ({ book, conversationId, currentUser, onClose }) => {
+  const navigate = useNavigate();
+
+  const handleBuy = async (bookId) => {
+    try {
+      await axios.post(
+        `${API}/api/orders`,
+        { bookId },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
+      alert("Order placed successfully");
+      navigate("/my-orders");
+    } catch (err) {
+      console.error("Failed to place order", err);
+      alert("Failed to place order");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="w-full max-w-4xl h-[70vh] bg-white rounded-xl shadow-xl grid grid-cols-1 md:grid-cols-2 relative overflow-hidden">
@@ -11,7 +36,7 @@ const ChatModal = ({ book, conversationId, currentUser, onClose }) => {
           ✕
         </button>
 
-        <BookPreviewPane book={book} />
+        <BookPreviewPane book={book} onBuy={handleBuy} currentUser={currentUser} />
 
         <div className="h-full">
           <ChatPane conversationId={conversationId} currentUser={currentUser} />

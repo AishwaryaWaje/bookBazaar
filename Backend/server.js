@@ -8,6 +8,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 import conversationRoutes from "./routes/conversationRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cookieParser from "cookie-parser";
@@ -31,6 +32,7 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/admin", adminRoutes);
 

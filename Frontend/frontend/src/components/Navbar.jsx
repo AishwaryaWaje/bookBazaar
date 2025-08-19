@@ -180,6 +180,12 @@ const Navbar = () => {
                   My Books
                 </button>
                 <button
+                  onClick={() => go("/my-orders")}
+                  className="block w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+                  type="button">
+                  My Orders
+                </button>
+                <button
                   onClick={() => go("/wishlist")}
                   className="block w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
                   type="button">

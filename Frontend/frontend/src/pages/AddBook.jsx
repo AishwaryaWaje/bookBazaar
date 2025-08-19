@@ -89,7 +89,7 @@ const AddBook = () => {
           onClick={handleClose}
           aria-label="Close and return to home"
           className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl leading-none cursor-pointer">
-          ✕
+          <i className="fa-solid fa-xmark"></i>
         </button>
 
         <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">Add a New Book</h2>

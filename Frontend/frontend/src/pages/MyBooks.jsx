@@ -170,7 +170,7 @@ const MyBooks = () => {
           <button
             onClick={closeEditModal}
             className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition cursor-pointer">
-            ✕
+            <i className="fa-solid fa-xmark"></i>
           </button>
 
           <h2 className="text-2xl font-bold mb-5 text-center text-gray-800">Edit Book</h2>

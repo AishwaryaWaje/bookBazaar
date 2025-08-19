@@ -9,6 +9,7 @@ import AddBook from "./pages/AddBook";
 import MyBooks from "./pages/MyBooks";
 import Wishlist from "./pages/Wishlist";
 import Messages from "./pages/Messages";
+import MyOrders from "./pages/MyOrders";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import RequireAdmin from "./pages/RequireAdmin";
@@ -40,6 +41,7 @@ const App = () => {
                 <Route path="/my-books" element={<MyBooks />} />
                 <Route path="/messages" element={<Messages />} />
                 <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/my-orders" element={<MyOrders />} />
               </Routes>
             </Layout>
           }
