@@ -54,7 +54,7 @@ const AdminLogin = () => {
           required
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
+        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded cursor-pointer">
           Login
         </button>
       </form>

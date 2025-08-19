@@ -80,7 +80,7 @@ const Wishlist = () => {
                   </p>
                   <button
                     onClick={() => handleRemove(book._id)}
-                    className="mt-3 w-full bg-red-500 text-white py-2 rounded hover:bg-red-600">
+                    className="mt-3 w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 cursor-pointer">
                     Remove
                   </button>
                 </div>

@@ -88,7 +88,7 @@ const AddBook = () => {
           type="button"
           onClick={handleClose}
           aria-label="Close and return to home"
-          className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl leading-none">
+          className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl leading-none cursor-pointer">
           ✕
         </button>
 
@@ -180,7 +180,7 @@ const AddBook = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 font-semibold">
+            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 font-semibold cursor-pointer">
             {loading ? "Adding..." : "Add Book"}
           </button>
         </form>

@@ -147,13 +147,13 @@ const MyBooks = () => {
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => openEditModal(book)}
-                      className="p-2 text-yellow-500 hover:text-yellow-600"
+                      className="p-2 text-yellow-500 hover:text-yellow-600 cursor-pointer"
                       title="Edit Book">
                       <FiEdit2 size={18} />
                     </button>
                     <button
                       onClick={() => handleDeleteBook(book._id)}
-                      className="p-2 text-red-500 hover:text-red-600"
+                      className="p-2 text-red-500 hover:text-red-600 cursor-pointer"
                       title="Delete Book">
                       <FiTrash2 size={18} />
                     </button>
@@ -169,7 +169,7 @@ const MyBooks = () => {
         <div className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-xl p-6 transition-transform duration-300 transform animate-slideInRight">
           <button
             onClick={closeEditModal}
-            className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition">
+            className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition cursor-pointer">
             ✕
           </button>
 
@@ -246,12 +246,12 @@ const MyBooks = () => {
               <button
                 type="button"
                 onClick={closeEditModal}
-                className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 transition">
+                className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 transition cursor-pointer">
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
                 disabled={updating}>
                 {updating ? "Updating..." : "Save Changes"}
               </button>

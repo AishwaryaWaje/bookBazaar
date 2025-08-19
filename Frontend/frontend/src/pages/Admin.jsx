@@ -88,7 +88,7 @@ const Admin = () => {
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <button
           onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded cursor-pointer">
           Logout
         </button>
       </div>
@@ -144,12 +144,12 @@ const Admin = () => {
                 />
                 <button
                   onClick={() => handleSave(book._id)}
-                  className="text-green-500 hover:text-green-600">
+                  className="text-green-500 hover:text-green-600 cursor-pointer">
                   <FiSave size={20} />
                 </button>
                 <button
                   onClick={() => setEditingBookId(null)}
-                  className="text-red-500 hover:text-red-600">
+                  className="text-red-500 hover:text-red-600 cursor-pointer">
                   <FiX size={20} />
                 </button>
               </div>
@@ -171,12 +171,12 @@ const Admin = () => {
                         genere: book.genere,
                       });
                     }}
-                    className="text-blue-500 hover:text-blue-600">
+                    className="text-blue-500 hover:text-blue-600 cursor-pointer">
                     <FiEdit size={20} />
                   </button>
                   <button
                     onClick={() => handleDelete(book._id)}
-                    className="text-red-500 hover:text-red-600">
+                    className="text-red-500 hover:text-red-600 cursor-pointer">
                     <FiTrash2 size={20} />
                   </button>
                 </div>
