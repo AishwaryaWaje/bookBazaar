@@ -2,7 +2,7 @@ import axios from "axios";
 import BookPreviewPane from "./BookPreviewPane";
 import ChatPane from "./ChatPane";
 import { useNavigate } from "react-router-dom";
-import { getToken } from "../utils/AuthUtils";
+import { getToken } from "../../utils/AuthUtils";
 
 const API = import.meta.env.VITE_API_URL;
 
