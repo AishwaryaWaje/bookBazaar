@@ -3,7 +3,7 @@ const BookPreviewPane = ({ book, onBuy, currentUser }) => {
   const isOwner =
     currentUser && book.listedBy && String(book.listedBy._id) === String(currentUser._id);
   return (
-    <aside className="p-6 bg-gray-50 border-r h-full flex flex-col items-center justify-center">
+    <aside className="p-6 bg-gray-50 border-r h-full flex flex-col items-center space-y-2">
       <img
         src={book.image || "https://placehold.co/150x220?text=No+Image"}
         alt={book.title}
