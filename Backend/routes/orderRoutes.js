@@ -5,7 +5,7 @@ import { placeOrder, getMyOrders, updateOrderStatus } from "../controllers/order
 const router = express.Router();
 
 router.post("/", protect, placeOrder);
-router.post("/", protect, getMyOrders);
+router.get("/", protect, getMyOrders);
 router.put("/:id/status", protect, updateOrderStatus);
 
 export default router;
