@@ -75,7 +75,6 @@ const FiltersBar = ({ filters, setFilters }) => {
         ))}
       </select>
 
-      {/* Condition Filter */}
       <select
         name="condition"
         value={filters.condition}
@@ -90,7 +89,6 @@ const FiltersBar = ({ filters, setFilters }) => {
         <option value="Damaged">Damaged</option>
       </select>
 
-      {/* Price Filter */}
       <select
         name="priceRange"
         onChange={handlePriceChange}
