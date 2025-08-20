@@ -10,7 +10,7 @@ const MyOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(`${API}/orders`, { withCredentials: true });
+      const res = await axios.get(`${API}/api/orders`, { withCredentials: true });
       setOrders(res.data);
     } catch (e) {
       console.error("Failed to fetch orders:", e);
