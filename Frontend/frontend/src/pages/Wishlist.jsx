@@ -55,7 +55,9 @@ const Wishlist = () => {
   return (
     <div className="p-6">
       {isEmpty ? (
-        <p className="text-gray-500 text-center mt-10 text-lg">Your wishlist is empty.</p>
+        <p className="col-span-full text-center text-gray-500 text-sm py-8">
+          Your wishlist is empty.
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {wishlist.map((item) => {

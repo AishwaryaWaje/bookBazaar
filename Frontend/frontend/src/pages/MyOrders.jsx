@@ -8,38 +8,38 @@ const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const location = useLocation();
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get(`${API}/orders`, { withCredentials: true });
-        setOrders(res.data);
-      } catch (e) {
-        console.error("Failed to fetch orders:", e);
-      }
-    };
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get(`${API}/orders`, { withCredentials: true });
+      setOrders(res.data);
+    } catch (e) {
+      console.error("Failed to fetch orders:", e);
+    }
+  };
 
+  useEffect(() => {
     fetchOrders();
   }, []);
 
   useEffect(() => {
     if (location.state?.newOrder) {
-      setOrders((prev) => [location.state.newOrder, ...prev]);
+      fetchOrders();
     }
   }, [location.state]);
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">My Orders</h1>
-
       {orders.length === 0 ? (
-        <p className="text-gray-500 text-center mt-10 text-lg"> Make your first order</p>
+        <p className="col-span-full text-center text-gray-500 text-sm py-8">
+          Make your first order
+        </p>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div key={order._id} className="p-4 border rounded-md">
-              <h2 className="font-semibold">{order.book?.title}</h2>
-              <p>Seller: {order.seller?.username}</p>
-              <p>Total: ₹{order.total}</p>
+            <div key={order._id} className="p-4 border rounded-md shadow-sm">
+              <h2 className="font-semibold text-lg">{order.book?.title || "Book unavailable"}</h2>
+              <p className="text-sm text-gray-700">Seller: {order.seller?.username || "Unknown"}</p>
+              <p className="text-sm text-gray-700">Total: ₹{order.total}</p>
               <p className="text-xs text-gray-500">Status: {order.deliveryStatus}</p>
             </div>
           ))}

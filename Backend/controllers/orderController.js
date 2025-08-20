@@ -9,8 +9,9 @@ export const placeOrder = async (req, res) => {
     const book = await Book.findById(bookId).populate("listedBy");
 
     if (!book) return res.status(404).json({ message: "Book not found" });
-    if (book.listedBy._id.toString() === userId)
+    if (book.listedBy._id.toString() === userId) {
       return res.status(400).json({ message: "You cannot order your own book" });
+    }
 
     const deliveryFee = 19;
     const total = book.price + deliveryFee;
@@ -23,6 +24,7 @@ export const placeOrder = async (req, res) => {
       deliveryFee,
       total,
     });
+
     newOrder = await newOrder.populate("book seller");
 
     res.status(201).json(newOrder);
@@ -32,18 +34,35 @@ export const placeOrder = async (req, res) => {
 };
 
 export const getMyOrders = async (req, res) => {
-  const userId = req.user.userId;
-  const orders = await Order.find({ buyer: userId }).populate("book seller");
-  res.json(orders);
+  try {
+    const userId = req.user.userId;
+    const orders = await Order.find({ buyer: userId }).populate("book seller");
+    res.json(orders);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};
+
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find().populate("book buyer seller");
+    res.json(orders);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch all orders" });
+  }
 };
 
 export const updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  const order = await Order.findByIdAndUpdate(
-    id,
-    { deliveryStatus: status },
-    { new: true }
-  ).populate("book seller");
-  res.json(order);
+  try {
+    const order = await Order.findByIdAndUpdate(
+      id,
+      { deliveryStatus: status },
+      { new: true }
+    ).populate("book seller");
+    res.json(order);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to update order status" });
+  }
 };
