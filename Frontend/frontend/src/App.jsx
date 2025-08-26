@@ -13,6 +13,7 @@ import MyOrders from "./pages/MyOrders";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import RequireAdmin from "./pages/RequireAdmin";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
                 <Route path="/messages" element={<Messages />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/my-orders" element={<MyOrders />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
               </Routes>
             </Layout>
           }

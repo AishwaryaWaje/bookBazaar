@@ -5,6 +5,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
   password: { type: String, required: true, minlength: 6 },
   isAdmin: { type: Boolean, default: false },
+  otp: { type: String },
+  otpExpires: { type: Date },
+  passwordResetAttempts: { type: Number, default: 0 },
 });
 
 const User = mongoose.model("User", userSchema);
