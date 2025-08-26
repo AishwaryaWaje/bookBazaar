@@ -9,13 +9,11 @@ const MyOrders = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage] = useState(5);
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(`${API}/api/orders?page=${currentPage}&limit=${ordersPerPage}`, {
+      const res = await axios.get(`${API}/api/orders`, {
         withCredentials: true,
       });
       setOrders(res.data);
@@ -29,7 +27,7 @@ const MyOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [currentPage]);
+  }, []);
 
   useEffect(() => {
     if (location.state?.newOrder) {
@@ -59,21 +57,6 @@ const MyOrders = () => {
           ))}
         </div>
       )}
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 mx-1 bg-gray-200 rounded-md disabled:opacity-50">
-          Previous
-        </button>
-        <span className="px-4 py-2 mx-1">Page {currentPage}</span>
-        <button
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-          disabled={orders.length < ordersPerPage}
-          className="px-4 py-2 mx-1 bg-gray-200 rounded-md disabled:opacity-50">
-          Next
-        </button>
-      </div>
     </div>
   );
 };
