@@ -36,7 +36,12 @@ const ChatModal = ({ book, conversationId, currentUser, onClose }) => {
           ✕
         </button>
 
-        <BookPreviewPane book={book} onBuy={handleBuy} currentUser={currentUser} />
+        <BookPreviewPane
+          book={book}
+          onBuy={handleBuy}
+          currentUser={currentUser}
+          isOrdered={book.isOrdered}
+        />
 
         <div className="h-full">
           <ChatPane conversationId={conversationId} currentUser={currentUser} />

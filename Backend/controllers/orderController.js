@@ -12,6 +12,9 @@ export const placeOrder = async (req, res) => {
     if (book.listedBy._id.toString() === userId) {
       return res.status(400).json({ message: "You cannot order your own book" });
     }
+    if (book.isOrdered) {
+      return res.status(400).json({ message: "This book has already been ordered." });
+    }
 
     const deliveryFee = 19;
     const total = book.price + deliveryFee;
