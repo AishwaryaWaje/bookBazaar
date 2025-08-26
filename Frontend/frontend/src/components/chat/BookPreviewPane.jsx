@@ -1,4 +1,4 @@
-const BookPreviewPane = ({ book, onBuy, currentUser }) => {
+const BookPreviewPane = ({ book, onBuy, currentUser, isOrdered }) => {
   if (!book) return null;
   const isOwner =
     currentUser && book.listedBy && String(book.listedBy._id) === String(currentUser._id);
@@ -15,13 +15,16 @@ const BookPreviewPane = ({ book, onBuy, currentUser }) => {
       <p className="text-sm text-gray-500 mt-1">Condition: {book.condition}</p>
       <p className="text-sm text-gray-500">Genre: {book.genere}</p>
 
-      {!isOwner && (
-        <button
-          onClick={() => onBuy(book._id)}
-          className="mt-auto bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 transition cursor-pointer">
-          <i className="fa-solid fa-bolt"></i>Buy Now
-        </button>
-      )}
+      {!isOwner &&
+        (isOrdered ? (
+          <p className="mt-auto text-red-500 font-semibold">This book has been ordered.</p>
+        ) : (
+          <button
+            onClick={() => onBuy(book._id)}
+            className="mt-auto bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 transition cursor-pointer">
+            <i className="fa-solid fa-bolt"></i>Buy Now
+          </button>
+        ))}
     </aside>
   );
 };

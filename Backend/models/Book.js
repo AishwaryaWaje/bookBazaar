@@ -12,6 +12,7 @@ const bookSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   image: { type: String },
   listedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  isOrdered: { type: Boolean, default: false },
 });
 
 const Book = mongoose.model("Book", bookSchema);

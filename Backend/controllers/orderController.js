@@ -25,6 +25,9 @@ export const placeOrder = async (req, res) => {
       total,
     });
 
+    book.isOrdered = true;
+    await book.save();
+
     newOrder = await newOrder.populate("book seller");
 
     res.status(201).json(newOrder);

@@ -17,4 +17,16 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+orderSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    try {
+      await mongoose.model("Book").findByIdAndUpdate(this.book, { isOrdered: true });
+      console.log(`Book ${this.book} marked as ordered.`);
+    } catch (error) {
+      console.error("Error updating book's isOrdered status:", error);
+    }
+  }
+  next();
+});
+
 export default mongoose.model("Order", orderSchema);
