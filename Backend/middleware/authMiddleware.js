@@ -9,13 +9,13 @@ export const protect = (req, res, next) => {
 
   if (!token) {
     const authHeader = req.headers.authorization;
-    if (authHeader?.startsWith("Bearer ")) {
+    if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
     }
   }
 
   if (!token) {
-    return res.status(401).json({ message: "No token, authentication denied" });
+    return res.status(401).json({ message: "Authentication token missing." });
   }
 
   try {
@@ -27,8 +27,14 @@ export const protect = (req, res, next) => {
       isAdmin: decoded.isAdmin || false,
     };
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Token is invalid or expired", error: err.message });
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Authentication token expired." });
+    } else if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ message: "Invalid authentication token." });
+    } else {
+      return res.status(401).json({ message: "Not authorized, token failed." });
+    }
   }
 };
 

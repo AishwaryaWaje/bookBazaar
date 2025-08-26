@@ -21,3 +21,10 @@ export const logoutAdmin = () => {
 export const getToken = () => {
   return localStorage.getItem("token") || null;
 };
+
+export const refreshToken = async () => {
+  console.log("Simulating token refresh...");
+  const newToken = "your_new_refreshed_token";
+  localStorage.setItem("token", newToken);
+  return newToken;
+};

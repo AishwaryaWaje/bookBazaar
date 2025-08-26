@@ -7,19 +7,29 @@ const API = import.meta.env.VITE_API_URL;
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const location = useLocation();
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ordersPerPage] = useState(5);
   const fetchOrders = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const res = await axios.get(`${API}/api/orders`, { withCredentials: true });
+      const res = await axios.get(`${API}/api/orders?page=${currentPage}&limit=${ordersPerPage}`, {
+        withCredentials: true,
+      });
       setOrders(res.data);
     } catch (e) {
       console.error("Failed to fetch orders:", e);
+      setError("Failed to fetch orders. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     if (location.state?.newOrder) {
@@ -29,7 +39,11 @@ const MyOrders = () => {
 
   return (
     <div className="p-6">
-      {orders.length === 0 ? (
+      {loading ? (
+        <p className="col-span-full text-center text-gray-500 text-sm py-8">Loading orders...</p>
+      ) : error ? (
+        <p className="col-span-full text-center text-red-500 text-sm py-8">{error}</p>
+      ) : orders.length === 0 ? (
         <p className="col-span-full text-center text-gray-500 text-sm py-8">
           Make your first order
         </p>
@@ -45,6 +59,21 @@ const MyOrders = () => {
           ))}
         </div>
       )}
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 mx-1 bg-gray-200 rounded-md disabled:opacity-50">
+          Previous
+        </button>
+        <span className="px-4 py-2 mx-1">Page {currentPage}</span>
+        <button
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+          disabled={orders.length < ordersPerPage}
+          className="px-4 py-2 mx-1 bg-gray-200 rounded-md disabled:opacity-50">
+          Next
+        </button>
+      </div>
     </div>
   );
 };

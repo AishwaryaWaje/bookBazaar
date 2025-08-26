@@ -26,6 +26,11 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
 connectDB();
 
 //app.get("/", (req, res) => res.send("API Working!"));
@@ -35,6 +40,14 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/admin", adminRoutes);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.statusCode || 500).json({
+    message: err.message || "An unexpected error occurred.",
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+  });
+});
 
 const io = new Server(server, {
   cors: {
