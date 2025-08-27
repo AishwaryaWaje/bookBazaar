@@ -1,0 +1,10 @@
+*.env
+
+
+# Ignore build outputs
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
