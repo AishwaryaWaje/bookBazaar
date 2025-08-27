@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getCurrentUser } from "../utils/AuthUtils";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import ChatModal from "../components/chat/ChatModel";
 
 const API = import.meta.env.VITE_API_URL;
 /**
@@ -21,7 +22,10 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(false);
   /** @type {Array<string>} */
   const [wishlistIds, setWishlistIds] = useState([]);
+  /** @type {object|null} */
+  const [activeChat, setActiveChat] = useState(null);
   const user = getCurrentUser();
+  const navigate = useNavigate();
 
   /**
    * @description Effect hook to fetch the user's wishlist on component mount if a user is authenticated.
@@ -97,6 +101,64 @@ const SearchResults = () => {
     }
   };
 
+  /**
+   * @description Generates a display label for the book's lister.
+   * @param {object} listedBy - The user object of the book's lister.
+   * @returns {string} The display label ("You", username, or "Unknown").
+   */
+  const getListedByLabel = (listedBy) => {
+    if (!listedBy) return "Unknown";
+    if (user && listedBy._id === user._id) return "You";
+    if (listedBy.username) return listedBy.username;
+    return "Unknown";
+  };
+
+  /**
+   * @description Handles clicking on a book card, opening a chat modal or redirecting to login.
+   * @param {object} book - The book object that was clicked.
+   * @returns {Promise<void>}
+   */
+  const handleBookClick = async (book) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const existing = await axios.get(`${API}/api/conversations/book/${book._id}`, {
+        withCredentials: true,
+      });
+
+      if (existing.data && existing.data._id) {
+        setActiveChat({ book, conversationId: existing.data._id });
+        return;
+      }
+    } catch (err) {
+      if (err.response && err.response.status !== 404) {
+        console.error("Error checking conversation:", err.response.data);
+        alert("Unable to open chat.");
+        return;
+      }
+    }
+
+    if (book.listedBy?._id === user._id) {
+      alert("You cannot chat about your own listing until someone messages you.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `${API}/api/conversations`,
+        { bookId: book._id },
+        { withCredentials: true }
+      );
+      setActiveChat({ book, conversationId: res.data._id });
+    } catch (createErr) {
+      console.error("Failed to create chat:", createErr.response?.data || createErr);
+      alert("You can't open this chat as you have posted this.");
+    }
+  };
+
   if (query.trim() === "")
     return <div className="text-center py-10 text-gray-500">Start typing to search books...</div>;
 
@@ -112,6 +174,7 @@ const SearchResults = () => {
           {books.map((book) => (
             <div
               key={book._id}
+              onClick={() => handleBookClick(book)}
               className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col relative w-full max-w-xs mx-auto">
               <button
                 onClick={() => toggleWishlist(book._id)}
@@ -137,10 +200,21 @@ const SearchResults = () => {
                   <span className="font-medium">Condition:</span> {book.condition || "N/A"}
                 </p>
                 <p className="text-green-600 font-bold text-base mt-2">₹{book.price}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Listed by: {getListedByLabel(book.listedBy)}
+                </p>
               </div>
             </div>
           ))}
         </div>
+      )}
+      {activeChat && (
+        <ChatModal
+          book={activeChat.book}
+          conversationId={activeChat.conversationId}
+          currentUser={user}
+          onClose={() => setActiveChat(null)}
+        />
       )}
     </div>
   );
