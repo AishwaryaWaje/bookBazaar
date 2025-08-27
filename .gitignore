@@ -1,6 +1,5 @@
 *.env
 
-
 # Ignore build outputs
 dist/
 build/
