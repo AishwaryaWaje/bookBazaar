@@ -38,6 +38,17 @@ const sendEmail = async (to, subject, text) => {
   }
 };
 
+/**
+ * @description Register a new user.
+ * @route POST /api/auth/register
+ * @param {object} req - The request object.
+ * @param {string} req.body.username - The username of the new user.
+ * @param {string} req.body.email - The email of the new user.
+ * @param {string} req.body.password - The password of the new user.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object containing a success message and user data, along with a JWT in a cookie.
+ * @throws {object} - A JSON object with an error message.
+ */
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -88,6 +99,16 @@ export const register = async (req, res) => {
   }
 };
 
+/**
+ * @description Log in an existing user.
+ * @route POST /api/auth/login
+ * @param {object} req - The request object.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object containing a success message, user data, and a JWT in a cookie.
+ * @throws {object} - A JSON object with an error message.
+ */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -130,6 +151,13 @@ export const login = async (req, res) => {
   }
 };
 
+/**
+ * @description Log out a user by clearing the JWT cookie.
+ * @route POST /api/auth/logout
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ */
 export const logout = (req, res) => {
   res
     .clearCookie("token", {
@@ -141,6 +169,14 @@ export const logout = (req, res) => {
     .json({ message: "Logout successful" });
 };
 
+/**
+ * @description Get the profile of the authenticated user.
+ * @route GET /api/auth/profile
+ * @param {object} req - The request object (should contain `req.user` from `protect` middleware).
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object containing the user's profile data.
+ * @throws {object} - A JSON object with an error message if not authenticated or user not found.
+ */
 export const getProfile = async (req, res) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ message: "Not authenticated" });
@@ -157,6 +193,15 @@ export const getProfile = async (req, res) => {
   }
 };
 
+/**
+ * @description Request a password reset OTP for a given email.
+ * @route POST /api/auth/forgot-password
+ * @param {object} req - The request object.
+ * @param {string} req.body.email - The email of the user requesting password reset.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ * @throws {object} - A JSON object with an error message if the user is not found or email sending fails.
+ */
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -183,6 +228,16 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
+/**
+ * @description Verify the OTP sent to the user's email for password reset.
+ * @route POST /api/auth/verify-otp
+ * @param {object} req - The request object.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.otp - The OTP entered by the user.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ * @throws {object} - A JSON object with an error message if OTP is invalid, expired, or too many attempts.
+ */
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -217,6 +272,16 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
+/**
+ * @description Reset the user's password after OTP verification.
+ * @route POST /api/auth/reset-password
+ * @param {object} req - The request object.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.newPassword - The new password for the user.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ * @throws {object} - A JSON object with an error message if the user is not found or password reset fails.
+ */
 export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;

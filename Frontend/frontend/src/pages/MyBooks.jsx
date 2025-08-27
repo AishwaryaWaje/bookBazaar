@@ -4,11 +4,30 @@ import { getCurrentUser } from "../utils/AuthUtils";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 const API = import.meta.env.VITE_API_URL;
+/**
+ * @typedef {object} BookEditFormData
+ * @property {string} title - The title of the book.
+ * @property {string} author - The author of the book.
+ * @property {string} price - The price of the book.
+ * @property {string} genere - The genre of the book.
+ * @property {string} condition - The condition of the book.
+ * @property {File|null} image - The image file for the book.
+ */
+/**
+ * @description MyBooks component displays a list of books uploaded by the authenticated user.
+ * Allows users to edit and delete their listed books.
+ * @returns {JSX.Element} The MyBooks page component.
+ */
 const MyBooks = () => {
+  /** @type {object|null} */
   const [user] = useState(getCurrentUser());
+  /** @type {Array<object>} */
   const [books, setBooks] = useState([]);
+  /** @type {boolean} */
   const [loading, setLoading] = useState(true);
+  /** @type {object|null} */
   const [editingBook, setEditingBook] = useState(null);
+  /** @type {BookEditFormData} */
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -17,9 +36,16 @@ const MyBooks = () => {
     condition: "",
     image: null,
   });
+  /** @type {string|null} */
   const [previewImage, setPreviewImage] = useState(null);
+  /** @type {boolean} */
   const [updating, setUpdating] = useState(false);
 
+  /**
+   * @description Fetches the books listed by the current user from the API.
+   * Updates the `books` state and manages loading status.
+   * @returns {Promise<void>}
+   */
   const fetchBooks = async () => {
     try {
       const res = await axios.get(`${API}/api/books/mine`, {
@@ -33,10 +59,19 @@ const MyBooks = () => {
     }
   };
 
+  /**
+   * @description Effect hook to fetch books on component mount if a user is authenticated.
+   */
   useEffect(() => {
     if (user) fetchBooks();
   }, []);
 
+  /**
+   * @description Handles the deletion of a book by its ID.
+   * Prompts for user confirmation before deletion.
+   * @param {string} bookId - The ID of the book to delete.
+   * @returns {Promise<void>}
+   */
   const handleDeleteBook = async (bookId) => {
     if (!window.confirm("Are you sure you want to delete this book?")) return;
     try {
@@ -51,6 +86,11 @@ const MyBooks = () => {
     }
   };
 
+  /**
+   * @description Opens the edit modal for a specific book, populating the form with its current data.
+   * @param {object} book - The book object to be edited.
+   * @returns {void}
+   */
   const openEditModal = (book) => {
     setEditingBook(book);
     setFormData({
@@ -64,6 +104,10 @@ const MyBooks = () => {
     setPreviewImage(book.image);
   };
 
+  /**
+   * @description Closes the edit modal and resets the form data.
+   * @returns {void}
+   */
   const closeEditModal = () => {
     setEditingBook(null);
     setFormData({
@@ -77,17 +121,34 @@ const MyBooks = () => {
     setPreviewImage(null);
   };
 
+  /**
+   * @description Handles changes in the edit form input fields.
+   * @param {React.ChangeEvent<HTMLInputElement|HTMLSelectElement>} e - The event object.
+   * @returns {void}
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * @description Handles changes in the image file input for the edit form.
+   * Sets the new image file in formData and creates a preview URL.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The event object.
+   * @returns {void}
+   */
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setFormData((prev) => ({ ...prev, image: file }));
     if (file) setPreviewImage(URL.createObjectURL(file));
   };
 
+  /**
+   * @description Handles the submission of the updated book form.
+   * Sends a PUT request to the API to update the book details.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleUpdateBook = async (e) => {
     e.preventDefault();
     if (!editingBook) return;

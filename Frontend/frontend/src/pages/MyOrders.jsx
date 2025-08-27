@@ -4,11 +4,24 @@ import { useLocation } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
+/**
+ * @description MyOrders component displays a list of orders placed by the authenticated user.
+ * Handles loading states, error display, and re-fetching orders upon new order creation.
+ * @returns {JSX.Element} The MyOrders page component.
+ */
 const MyOrders = () => {
+  /** @type {Array<object>} */
   const [orders, setOrders] = useState([]);
   const location = useLocation();
+  /** @type {boolean} */
   const [loading, setLoading] = useState(true);
+  /** @type {string|null} */
   const [error, setError] = useState(null);
+  /**
+   * @description Fetches orders from the API for the authenticated user.
+   * Sets loading and error states appropriately.
+   * @returns {Promise<void>}
+   */
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
@@ -25,10 +38,16 @@ const MyOrders = () => {
     }
   };
 
+  /**
+   * @description Effect hook to fetch orders on component mount.
+   */
   useEffect(() => {
     fetchOrders();
   }, []);
 
+  /**
+   * @description Effect hook to re-fetch orders if a new order has been placed (indicated by location state).
+   */
   useEffect(() => {
     if (location.state?.newOrder) {
       fetchOrders();

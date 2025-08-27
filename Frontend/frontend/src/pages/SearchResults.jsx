@@ -6,14 +6,28 @@ import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 
 const API = import.meta.env.VITE_API_URL;
+/**
+ * @description SearchResults component displays books based on a search query from the URL.
+ * Allows users to add/remove books from their wishlist.
+ * @returns {JSX.Element} The SearchResults page component.
+ */
 const SearchResults = () => {
   const location = useLocation();
+  /** @type {string} */
   const query = new URLSearchParams(location.search).get("q") || "";
+  /** @type {Array<object>} */
   const [books, setBooks] = useState([]);
+  /** @type {boolean} */
   const [loading, setLoading] = useState(false);
+  /** @type {Array<string>} */
   const [wishlistIds, setWishlistIds] = useState([]);
   const user = getCurrentUser();
 
+  /**
+   * @description Effect hook to fetch the user's wishlist on component mount if a user is authenticated.
+   * Populates `wishlistIds` with book IDs from the user's wishlist.
+   * @returns {Promise<void>}
+   */
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -28,6 +42,12 @@ const SearchResults = () => {
     })();
   }, [user]);
 
+  /**
+   * @description Effect hook to fetch search results based on the query parameter.
+   * Includes an AbortController to cancel previous requests if the query changes.
+   * Manages loading state during the fetch operation.
+   * @returns {function(): void} Cleanup function to abort the fetch request.
+   */
   useEffect(() => {
     if (query.trim() === "") {
       setBooks([]);
@@ -54,6 +74,12 @@ const SearchResults = () => {
     return () => controller.abort();
   }, [query]);
 
+  /**
+   * @description Toggles a book's presence in the user's wishlist (add or remove).
+   * Requires user authentication.
+   * @param {string} bookId - The ID of the book to toggle in the wishlist.
+   * @returns {Promise<void>}
+   */
   const toggleWishlist = async (bookId) => {
     if (!user) return alert("Please login to manage wishlist.");
     try {

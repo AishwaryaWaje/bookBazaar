@@ -4,16 +4,34 @@ import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
+/**
+ * @description ForgotPassword component handles the multi-step process of resetting a user's password.
+ * This includes requesting an OTP, verifying the OTP, and setting a new password.
+ * @returns {JSX.Element} The ForgotPassword page component.
+ */
 const ForgotPassword = () => {
+  /** @type {string} */
   const [email, setEmail] = useState("");
+  /** @type {string} */
   const [otp, setOtp] = useState("");
+  /** @type {string} */
   const [newPassword, setNewPassword] = useState("");
+  /** @type {string} */
   const [confirmPassword, setConfirmPassword] = useState("");
+  /** @type {number} */
   const [step, setStep] = useState(1);
+  /** @type {string} */
   const [message, setMessage] = useState("");
+  /** @type {string} */
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /**
+   * @description Handles the request to send an OTP to the user's email for password reset.
+   * Transitions to step 2 (OTP verification) on success.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setError("");
@@ -27,6 +45,12 @@ const ForgotPassword = () => {
     }
   };
 
+  /**
+   * @description Handles the verification of the OTP provided by the user.
+   * Transitions to step 3 (new password input) on successful verification.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError("");
@@ -40,6 +64,12 @@ const ForgotPassword = () => {
     }
   };
 
+  /**
+   * @description Handles the final step of resetting the user's password.
+   * Requires new password and confirmation to match. Redirects to login on success.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setError("");

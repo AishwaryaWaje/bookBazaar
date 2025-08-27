@@ -4,10 +4,24 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../utils/AuthUtils";
 
 const API = import.meta.env.VITE_API_URL;
+/**
+ * @typedef {object} BookFormData
+ * @property {string} title - The title of the book.
+ * @property {string} author - The author of the book.
+ * @property {string} genere - The genre of the book.
+ * @property {string} condition - The condition of the book (e.g., "Brand New", "Used").
+ * @property {string} price - The price of the book.
+ */
+/**
+ * @description AddBook component for listing a new book for sale.
+ * Requires user authentication.
+ * @returns {JSX.Element} The AddBook page component.
+ */
 const AddBook = () => {
   const user = getCurrentUser();
   const navigate = useNavigate();
 
+  /** @type {BookFormData} */
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -15,10 +29,16 @@ const AddBook = () => {
     condition: "",
     price: "",
   });
+  /** @type {File|null} */
   const [image, setImage] = useState(null);
+  /** @type {string|null} */
   const [imagePreview, setImagePreview] = useState(null);
+  /** @type {boolean} */
   const [loading, setLoading] = useState(false);
 
+  /**
+   * @description Effect hook to handle 'Escape' key press to navigate back to the home page.
+   */
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") navigate("/");
@@ -33,10 +53,20 @@ const AddBook = () => {
     );
   }
 
+  /**
+   * @description Handles changes in the form input fields (title, author, genre, condition, price).
+   * @param {React.ChangeEvent<HTMLInputElement|HTMLSelectElement>} e - The event object.
+   * @returns {void}
+   */
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  /**
+   * @description Handles changes in the image file input, setting the image and a preview.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The event object.
+   * @returns {void}
+   */
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
@@ -49,6 +79,12 @@ const AddBook = () => {
     }
   };
 
+  /**
+   * @description Handles the form submission to add a new book.
+   * Performs validation and sends a multipart/form-data request to the API.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { title, author, genere, condition, price } = formData;
@@ -79,6 +115,10 @@ const AddBook = () => {
     }
   };
 
+  /**
+   * @description Closes the Add Book form and navigates to the home page.
+   * @returns {void}
+   */
   const handleClose = () => navigate("/");
 
   return (

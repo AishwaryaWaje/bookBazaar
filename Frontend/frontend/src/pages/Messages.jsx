@@ -7,22 +7,47 @@ import { FiTrash2 } from "react-icons/fi";
 
 const API = import.meta.env.VITE_API_URL;
 
+/**
+ * @description Retrieves the other participant in a conversation, excluding the current user.
+ * @param {object} convo - The conversation object.
+ * @param {string} currentUserId - The ID of the current authenticated user.
+ * @returns {object|null} The user object of the other participant, or null if not found.
+ */
 const getOtherParticipant = (convo, currentUserId) => {
   if (!convo?.participants?.length) return null;
   return convo.participants.find((p) => p._id !== currentUserId) || null;
 };
 
+/**
+ * @description Generates a preview text for a conversation based on its last message.
+ * @param {object} convo - The conversation object.
+ * @returns {string} The last message text or a default "No messages yet" string.
+ */
 const getPreviewText = (convo) =>
   convo?.lastMessage?.trim() ? convo.lastMessage : "No messages yet — start the conversation!";
 
+/**
+ * @description Messages component for displaying and managing user conversations.
+ * Allows users to view conversation lists, open chat panes, and delete conversations.
+ * @returns {JSX.Element} The Messages page component.
+ */
 const Messages = () => {
+  /** @type {Array<object>} */
   const [conversations, setConversations] = useState([]);
+  /** @type {object|null} */
   const [activeChat, setActiveChat] = useState(null);
+  /** @type {boolean} */
   const [loading, setLoading] = useState(true);
 
   const user = getCurrentUser();
   const navigate = useNavigate();
 
+  /**
+   * @description Handles the deletion of a specific conversation.
+   * Prompts for user confirmation before deletion.
+   * @param {string} id - The ID of the conversation to delete.
+   * @returns {Promise<void>}
+   */
   const handleDeleteConversation = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this conversation?");
     if (!confirmDelete) return;
@@ -40,12 +65,20 @@ const Messages = () => {
     }
   };
 
+  /**
+   * @description Effect hook to redirect unauthenticated users to the login page.
+   */
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
 
+  /**
+   * @description Effect hook to fetch conversations for the authenticated user.
+   * Filters out conversations without a last message.
+   * @returns {Promise<void>}
+   */
   useEffect(() => {
     if (!user) return;
     const fetchConversations = async () => {
@@ -66,13 +99,27 @@ const Messages = () => {
     fetchConversations();
   }, [user]);
 
+  /**
+   * @description Opens the chat pane for a selected conversation.
+   * @param {object} convo - The conversation object to open.
+   * @returns {void}
+   */
   const openChat = (convo) => {
     const other = getOtherParticipant(convo, user._id);
     setActiveChat({ convo, otherUser: other });
   };
 
+  /**
+   * @description Closes the currently active chat pane.
+   * @returns {void}
+   */
   const closeChat = () => setActiveChat(null);
 
+  /**
+   * @description Navigates to the book details page for a given book ID.
+   * @param {string} bookId - The ID of the book to view.
+   * @returns {void}
+   */
   const handleViewBook = (bookId) => {
     if (!bookId) return;
     navigate(`/books/${bookId}`);

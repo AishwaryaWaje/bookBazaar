@@ -4,12 +4,25 @@ import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
+/**
+ * @description AdminLogin component for authenticating administrators.
+ * @returns {JSX.Element} The AdminLogin page component.
+ */
 const AdminLogin = () => {
+  /** @type {string} */
   const [email, setEmail] = useState("");
+  /** @type {string} */
   const [password, setPassword] = useState("");
+  /** @type {string} */
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /**
+   * @description Handles the admin login form submission.
+   * Authenticates admin credentials and redirects to the admin dashboard on success.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");

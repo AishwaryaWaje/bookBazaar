@@ -3,15 +3,34 @@ import axios from "axios";
 import socket from "../../utils/Socket";
 
 const API = import.meta.env.VITE_API_URL;
+/**
+ * @description Converts a mongoose ObjectId or object with an _id property to its string representation.
+ * @param {object|string} val - The value to convert, can be a mongoose ObjectId or an object with an `_id` property.
+ * @returns {string} The string representation of the ID, or an empty string if invalid input.
+ */
 const idToStr = (val) => (val?._id ? String(val._id) : val ? String(val) : "");
 
+/**
+ * @description ChatPane component displays messages within a specific conversation and allows users to send new messages.
+ * @param {object} props - React props.
+ * @param {string} props.conversationId - The ID of the active conversation.
+ * @param {object} props.currentUser - The currently authenticated user object.
+ * @returns {JSX.Element} The ChatPane component.
+ */
 const ChatPane = ({ conversationId, currentUser }) => {
+  /** @type {Array<object>} */
   const [messages, setMessages] = useState([]);
+  /** @type {string} */
   const [input, setInput] = useState("");
   const bottomRef = useRef(null);
 
+  /** @type {string} */
   const myId = idToStr(currentUser?._id || currentUser?.userId || currentUser?.id);
 
+  /**
+   * @description Effect hook to load messages for the active conversation when `conversationId` changes.
+   * @returns {Promise<void>}
+   */
   useEffect(() => {
     if (!conversationId) return;
     const loadMessages = async () => {
@@ -27,6 +46,11 @@ const ChatPane = ({ conversationId, currentUser }) => {
     loadMessages();
   }, [conversationId]);
 
+  /**
+   * @description Effect hook to handle Socket.IO events for new messages.
+   * Joins the conversation room and listens for `messageCreated` and `receive_message` events.
+   * @returns {function(): void} Cleanup function to unsubscribe from socket events.
+   */
   useEffect(() => {
     if (!conversationId) return;
 
@@ -53,10 +77,19 @@ const ChatPane = ({ conversationId, currentUser }) => {
     };
   }, [conversationId]);
 
+  /**
+   * @description Effect hook to scroll to the bottom of the chat pane when new messages arrive.
+   */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  /**
+   * @description Handles sending a new message in the conversation.
+   * Clears the input field and sends the message to the API.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleSend = useCallback(
     async (e) => {
       e.preventDefault();

@@ -9,6 +9,11 @@ import FiltersBar from "../components/Filterbar";
 
 const API = import.meta.env.VITE_API_URL;
 console.log(import.meta.env.VITE_API_URL);
+/**
+ * @description Shuffles the elements of an array randomly.
+ * @param {Array<any>} array - The array to shuffle.
+ * @returns {Array<any>} A new array with shuffled elements.
+ */
 const shuffleArray = (array) => {
   return array
     .map((value) => ({ value, sort: Math.random() }))
@@ -18,22 +23,38 @@ const shuffleArray = (array) => {
 
 const BOOKS_PER_PAGE = 28;
 
+/**
+ * @description Home page component displaying a list of books with filtering, search, wishlist, and chat functionalities.
+ * @returns {JSX.Element} The Home page component.
+ */
 const Home = () => {
+  /** @type {Array<object>} */
   const [books, setBooks] = useState([]);
+  /** @type {Set<string>} */
   const [wishlistIds, setWishlistIds] = useState(new Set());
+  /** @type {boolean} */
   const [loading, setLoading] = useState(true);
+  /** @type {object|null} */
   const [activeChat, setActiveChat] = useState(null);
+  /** @type {object} */
   const [filters, setFilters] = useState({
     genere: "",
     condition: "",
     minPrice: "",
     maxPrice: "",
   });
+  /** @type {number} */
   const [currentPage, setCurrentPage] = useState(1);
+  /** @type {number} */
   const [totalBooks, setTotalBooks] = useState(0);
   const user = getCurrentUser();
   const navigate = useNavigate();
 
+  /**
+   * @description Fetches books from the API based on current filters and pagination.
+   * Shuffles the fetched books and updates the state.
+   * @returns {Promise<void>}
+   */
   const fetchBooks = async () => {
     setLoading(true);
     try {
@@ -55,10 +76,18 @@ const Home = () => {
     }
   };
 
+  /**
+   * @description Effect hook to fetch books whenever filters or current page change.
+   */
   useEffect(() => {
     fetchBooks();
   }, [filters, currentPage]);
 
+  /**
+   * @description Effect hook to fetch the user's wishlist on component mount or when user changes.
+   * Populates `wishlistIds` with book IDs from the user's wishlist.
+   * @returns {Promise<void>}
+   */
   useEffect(() => {
     const fetchWishlist = async () => {
       if (!user) return;
@@ -75,6 +104,12 @@ const Home = () => {
     fetchWishlist();
   }, [user]);
 
+  /**
+   * @description Toggles a book's presence in the user's wishlist (add or remove).
+   * Requires user authentication.
+   * @param {string} bookId - The ID of the book to toggle in the wishlist.
+   * @returns {Promise<void>}
+   */
   const handleWishlistToggle = async (bookId) => {
     if (!user) {
       alert("Please login to manage wishlist.");
@@ -104,6 +139,11 @@ const Home = () => {
     }
   };
 
+  /**
+   * @description Generates a display label for the book's lister.
+   * @param {object} listedBy - The user object of the book's lister.
+   * @returns {string} The display label ("You", username, or "Unknown").
+   */
   const getListedByLabel = (listedBy) => {
     if (!listedBy) return "Unknown";
     if (user && listedBy._id === user._id) return "You";
@@ -111,6 +151,11 @@ const Home = () => {
     return "Unknown";
   };
 
+  /**
+   * @description Handles clicking on a book card, opening a chat modal or redirecting to login.
+   * @param {object} book - The book object that was clicked.
+   * @returns {Promise<void>}
+   */
   const handleBookClick = async (book) => {
     if (!user) {
       navigate("/login");
@@ -152,6 +197,10 @@ const Home = () => {
     }
   };
 
+  /**
+   * @description Renders pagination controls for the book listings.
+   * @returns {JSX.Element|null} The pagination component or null if only one page.
+   */
   const renderPagination = () => {
     const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE);
     if (totalPages <= 1) return null;

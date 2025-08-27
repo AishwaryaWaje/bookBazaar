@@ -1,6 +1,16 @@
 import Order from "../models/Order.js";
 import Book from "../models/Book.js";
 
+/**
+ * @description Places a new order for a book.
+ * @route POST /api/orders
+ * @param {object} req - The request object.
+ * @param {string} req.body.bookId - The ID of the book to be ordered.
+ * @param {object} req.user - The authenticated user object (from `protect` middleware).
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object representing the newly placed order.
+ * @throws {object} - A JSON object with an error message if the book is not found, owned by the user, already ordered, or placing the order fails.
+ */
 export const placeOrder = async (req, res) => {
   const { bookId } = req.body;
   const userId = req.user.userId;
@@ -39,6 +49,15 @@ export const placeOrder = async (req, res) => {
   }
 };
 
+/**
+ * @description Retrieves all orders placed by the authenticated user.
+ * @route GET /api/orders/my-orders
+ * @param {object} req - The request object.
+ * @param {object} req.user - The authenticated user object (from `protect` middleware).
+ * @param {object} res - The response object.
+ * @returns {Array<object>} - A JSON array of order objects, populated with book and seller details.
+ * @throws {object} - A JSON object with an error message if fetching orders fails.
+ */
 export const getMyOrders = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -49,6 +68,14 @@ export const getMyOrders = async (req, res) => {
   }
 };
 
+/**
+ * @description Retrieves all orders in the system (Admin only).
+ * @route GET /api/orders/all
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Array<object>} - A JSON array of all order objects, populated with book, buyer, and seller details.
+ * @throws {object} - A JSON object with an error message if fetching all orders fails.
+ */
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find().populate("book buyer seller");
@@ -58,6 +85,16 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
+/**
+ * @description Updates the delivery status of an order by its ID (Admin only).
+ * @route PUT /api/orders/:id/status
+ * @param {object} req - The request object.
+ * @param {string} req.params.id - The ID of the order to update.
+ * @param {string} req.body.status - The new delivery status (e.g., "ITEM_COLLECTED", "DELIVERED").
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with the updated order data.
+ * @throws {object} - A JSON object with an error message if updating order status fails.
+ */
 export const updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

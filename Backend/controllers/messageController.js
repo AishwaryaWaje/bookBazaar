@@ -1,6 +1,12 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 
+/**
+ * @description Ensures the user is a participant of the given conversation.
+ * @param {string} conversationId - The ID of the conversation.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<object>} - An object containing either `convo` (if participant) or `status` and `message` (if not).
+ */
 const ensureParticipant = async (conversationId, userId) => {
   const convo = await Conversation.findById(conversationId).select("participants");
   if (!convo) return { status: 404, message: "Conversation not found" };
@@ -9,6 +15,16 @@ const ensureParticipant = async (conversationId, userId) => {
   return { convo };
 };
 
+/**
+ * @description Retrieves all messages for a specific conversation.
+ * @route GET /api/conversations/:conversationId/messages
+ * @param {object} req - The request object.
+ * @param {string} req.params.conversationId - The ID of the conversation.
+ * @param {object} req.user - The authenticated user object, containing `userId`.
+ * @param {object} res - The response object.
+ * @returns {Array<object>} - A JSON array of message objects, populated with sender details.
+ * @throws {object} - A JSON object with an error message if not authenticated, conversation not found, unauthorized, or fetching messages fails.
+ */
 export const getMessages = async (req, res) => {
   const { conversationId } = req.params;
   const userId = req.user?.userId;
@@ -29,6 +45,18 @@ export const getMessages = async (req, res) => {
   }
 };
 
+/**
+ * @description Sends a new message in a conversation and updates the conversation's last message.
+ * @route POST /api/conversations/:conversationId/messages
+ * @param {object} req - The request object.
+ * @param {string} req.params.conversationId - The ID of the conversation.
+ * @param {string} req.body.text - The content of the message.
+ * @param {object} req.user - The authenticated user object, containing `userId`.
+ * @param {object} req.app - The Express app instance, used to get the Socket.IO instance.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object representing the newly created message.
+ * @throws {object} - A JSON object with an error message if not authenticated, message text is missing, conversation not found, unauthorized, or sending message fails.
+ */
 export const sendMessage = async (req, res) => {
   const { conversationId } = req.params;
   const { text } = req.body;

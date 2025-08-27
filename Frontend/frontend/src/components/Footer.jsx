@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 
+/**
+ * @description Footer component displaying company information, quick links, support links, and social media icons.
+ * @returns {JSX.Element} The Footer component.
+ */
 const Footer = () => {
   return (
     <footer className="bg-black text-gray-300 mt-10">

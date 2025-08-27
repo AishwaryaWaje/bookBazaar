@@ -7,11 +7,19 @@ import axios from "axios";
 const API = import.meta.env.VITE_API_URL;
 const DEBOUNCE_MS = 300;
 
+/**
+ * @description Navbar component providing navigation, search functionality, and user authentication status.
+ * @returns {JSX.Element} The Navbar component.
+ */
 const Navbar = () => {
+  /** @type {string} */
   const [searchTerm, setSearchTerm] = useState("");
+  /** @type {boolean} */
   const [isSearchActive, setIsSearchActive] = useState(false);
+  /** @type {object|null} */
   const [user, setUser] = useState(getCurrentUser());
   const admin = getAdminUser();
+  /** @type {boolean} */
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -19,6 +27,9 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const debounceTimer = useRef(null);
 
+  /**
+   * @description Effect hook to handle clicks outside the dropdown to close it.
+   */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -29,6 +40,9 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  /**
+   * @description Effect hook to synchronize search term with URL query parameter when navigating.
+   */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q") || "";
@@ -40,6 +54,9 @@ const Navbar = () => {
     }
   }, [location]);
 
+  /**
+   * @description Effect hook for debounced search functionality. Navigates to search results after a delay.
+   */
   useEffect(() => {
     if (!isSearchActive) return;
 
@@ -63,6 +80,10 @@ const Navbar = () => {
     return () => clearTimeout(debounceTimer.current);
   }, [searchTerm, isSearchActive, location, navigate]);
 
+  /**
+   * @description Handles user logout, clears authentication data, and redirects to the login page.
+   * @returns {Promise<void>}
+   */
   const handleLogout = async () => {
     try {
       await axios.post(`${API}/api/auth/logout`, {}, { withCredentials: true });
@@ -79,12 +100,22 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  /**
+   * @description Navigates to a specified path and closes dropdown/search.
+   * @param {string} path - The path to navigate to.
+   * @returns {void}
+   */
   const go = (path) => {
     setDropdownOpen(false);
     setIsSearchActive(false);
     navigate(path);
   };
 
+  /**
+   * @description Handles clicks on protected navigation links. Redirects to login if not authenticated.
+   * @param {string} path - The path to navigate to.
+   * @returns {void}
+   */
   const handleProtectedClick = (path) => {
     if (!user) {
       alert("Please login to view this page.");
@@ -96,6 +127,11 @@ const Navbar = () => {
     navigate(path);
   };
 
+  /**
+   * @description Handles changes in the search input field.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The event object.
+   * @returns {void}
+   */
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);

@@ -6,18 +6,39 @@ import { logoutAdmin, getToken } from "../utils/AuthUtils";
 
 const API = import.meta.env.VITE_API_URL;
 
+/**
+ * @description Admin dashboard component for managing books and viewing analytics.
+ * Requires administrator privileges.
+ * @returns {JSX.Element} The Admin dashboard component.
+ */
 const Admin = () => {
+  /** @type {Array<object>} */
   const [books, setBooks] = useState([]);
+  /** @type {Array<object>} */
   const [filteredBooks, setFilteredBooks] = useState([]);
+  /** @type {object} */
   const [analytics, setAnalytics] = useState({});
+  /** @type {string|null} */
   const [editingBookId, setEditingBookId] = useState(null);
+  /** @type {object} */
   const [editedBook, setEditedBook] = useState({});
+  /** @type {string} */
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const token = getToken();
 
+  /**
+   * @description Authorization headers for API requests.
+   * @type {object}
+   * @property {object} headers - The headers object.
+   * @property {string} headers.Authorization - The Bearer token for authorization.
+   */
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
+  /**
+   * @description Fetches all books from the admin API and updates the state.
+   * @returns {Promise<void>}
+   */
   const fetchBooks = async () => {
     try {
       const res = await axios.get(`${API}/api/admin/books`, authHeaders);
@@ -28,6 +49,10 @@ const Admin = () => {
     }
   };
 
+  /**
+   * @description Fetches analytics data (total users, total books) from the admin API and updates the state.
+   * @returns {Promise<void>}
+   */
   const fetchAnalytics = async () => {
     try {
       const res = await axios.get(`${API}/api/admin/analytics`, authHeaders);
@@ -37,6 +62,11 @@ const Admin = () => {
     }
   };
 
+  /**
+   * @description Handles the deletion of a book by its ID.
+   * @param {string} bookId - The ID of the book to delete.
+   * @returns {Promise<void>}
+   */
   const handleDelete = async (bookId) => {
     try {
       await axios.delete(`${API}/api/admin/books/${bookId}`, authHeaders);
@@ -46,6 +76,11 @@ const Admin = () => {
     }
   };
 
+  /**
+   * @description Handles saving changes to an edited book.
+   * @param {string} bookId - The ID of the book to save.
+   * @returns {Promise<void>}
+   */
   const handleSave = async (bookId) => {
     try {
       await axios.put(`${API}/api/admin/books/${bookId}`, editedBook, authHeaders);
@@ -56,10 +91,20 @@ const Admin = () => {
     }
   };
 
+  /**
+   * @description Handles changes in the input fields when editing a book.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The event object.
+   * @returns {void}
+   */
   const handleEditChange = (e) => {
     setEditedBook({ ...editedBook, [e.target.name]: e.target.value });
   };
 
+  /**
+   * @description Handles the search input change, filtering the displayed books.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The event object.
+   * @returns {void}
+   */
   const handleSearch = (e) => {
     setSearch(e.target.value);
     const filtered = books.filter((book) =>
@@ -68,11 +113,19 @@ const Admin = () => {
     setFilteredBooks(filtered);
   };
 
+  /**
+   * @description Handles admin logout, clears admin session, and redirects to the admin login page.
+   * @returns {void}
+   */
   const handleLogout = () => {
     logoutAdmin();
     navigate("/bookbazaar-admin");
   };
 
+  /**
+   * @description Effect hook to fetch books and analytics on component mount or when token changes.
+   * Redirects to admin login if no token is present.
+   */
   useEffect(() => {
     if (!token) {
       navigate("/bookbazaar-admin");

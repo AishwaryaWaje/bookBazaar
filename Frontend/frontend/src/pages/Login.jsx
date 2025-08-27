@@ -4,15 +4,34 @@ import { useNavigate, Link } from "react-router-dom";
 import socket from "../utils/Socket";
 
 const API = import.meta.env.VITE_API_URL;
+/**
+ * @typedef {object} LoginInputs
+ * @property {string} email - The user's email.
+ * @property {string} password - The user's password.
+ */
+/**
+ * @description Login component for user authentication.
+ * @returns {JSX.Element} The Login page component.
+ */
 const Login = () => {
   const [inputs, setInputs] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /**
+   * @description Handles changes in the input fields.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The event object.
+   * @returns {void}
+   */
   const handleChange = (e) => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
   };
 
+  /**
+   * @description Handles the login form submission.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
     try {

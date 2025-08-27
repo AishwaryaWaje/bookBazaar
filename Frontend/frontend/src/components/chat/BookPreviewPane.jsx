@@ -1,3 +1,13 @@
+/**
+ * @description BookPreviewPane component displays a detailed preview of a book within a chat modal.
+ * It allows a user to buy the book if they are not the owner and the book is not already ordered.
+ * @param {object} props - React props.
+ * @param {object} props.book - The book object to display.
+ * @param {function(string): void} props.onBuy - Function to call when the "Buy Now" button is clicked.
+ * @param {object|null} props.currentUser - The currently authenticated user object.
+ * @param {boolean} props.isOrdered - Indicates if the book has already been ordered.
+ * @returns {JSX.Element|null} The BookPreviewPane component, or null if no book is provided.
+ */
 const BookPreviewPane = ({ book, onBuy, currentUser, isOrdered }) => {
   if (!book) return null;
   const isOwner =

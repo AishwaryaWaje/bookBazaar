@@ -1,6 +1,16 @@
 import Wishlist from "../models/Wishlist.js";
 import Book from "../models/Book.js";
 
+/**
+ * @description Adds a book to the authenticated user's wishlist.
+ * @route POST /api/wishlist
+ * @param {object} req - The request object.
+ * @param {string} req.body.bookId - The ID of the book to add to the wishlist.
+ * @param {object} req.user - The authenticated user object (from `protect` middleware).
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message and the new wishlist item.
+ * @throws {object} - A JSON object with an error message if the book is not found, already in wishlist, or addition fails.
+ */
 export const addToWishlist = async (req, res) => {
   try {
     const { bookId } = req.body;
@@ -21,6 +31,15 @@ export const addToWishlist = async (req, res) => {
   }
 };
 
+/**
+ * @description Retrieves the authenticated user's wishlist.
+ * @route GET /api/wishlist
+ * @param {object} req - The request object.
+ * @param {object} req.user - The authenticated user object (from `protect` middleware).
+ * @param {object} res - The response object.
+ * @returns {Array<object>} - A JSON array of wishlist items, populated with book details.
+ * @throws {object} - A JSON object with an error message if fetching the wishlist fails.
+ */
 export const getWishlist = async (req, res) => {
   try {
     const wishlist = await Wishlist.find({ user: req.user.userId }).populate("book");
@@ -30,6 +49,16 @@ export const getWishlist = async (req, res) => {
   }
 };
 
+/**
+ * @description Removes a book from the authenticated user's wishlist.
+ * @route DELETE /api/wishlist/:bookId
+ * @param {object} req - The request object.
+ * @param {string} req.params.bookId - The ID of the book to remove from the wishlist.
+ * @param {object} req.user - The authenticated user object (from `protect` middleware).
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ * @throws {object} - A JSON object with an error message if removal fails.
+ */
 export const removeFromWishlist = async (req, res) => {
   try {
     const { bookId } = req.params;

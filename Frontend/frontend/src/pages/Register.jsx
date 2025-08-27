@@ -3,16 +3,41 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
+/**
+ * @typedef {object} RegisterInputs
+ * @property {string} username - The user's chosen username.
+ * @property {string} email - The user's email address.
+ * @property {string} password - The user's password.
+ */
+/**
+ * @description Register component for new user account creation.
+ * Allows users to register with a username, email, and password.
+ * @returns {JSX.Element} The Register page component.
+ */
 const Register = () => {
+  /** @type {RegisterInputs} */
   const [inputs, setInputs] = useState({ username: "", email: "", password: "" });
+  /** @type {string} */
   const [error, setError] = useState("");
+  /** @type {boolean} */
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * @description Handles changes in the input fields for the registration form.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The event object.
+   * @returns {void}
+   */
   const handleChange = (e) => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
   };
 
+  /**
+   * @description Handles the registration form submission.
+   * Attempts to register the user and redirects to the home page on success.
+   * @param {React.FormEvent<HTMLFormElement>} e - The event object.
+   * @returns {Promise<void>}
+   */
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");

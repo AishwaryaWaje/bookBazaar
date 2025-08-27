@@ -6,9 +6,25 @@ import { getToken } from "../../utils/AuthUtils";
 
 const API = import.meta.env.VITE_API_URL;
 
+/**
+ * @description ChatModal component displays a chat interface alongside a book preview.
+ * Allows users to initiate a chat about a book and place an order.
+ * @param {object} props - React props.
+ * @param {object} props.book - The book object to display in the preview pane.
+ * @param {string} props.conversationId - The ID of the active conversation.
+ * @param {object|null} props.currentUser - The currently authenticated user object.
+ * @param {function(): void} props.onClose - Callback function to close the modal.
+ * @returns {JSX.Element} The ChatModal component.
+ */
 const ChatModal = ({ book, conversationId, currentUser, onClose }) => {
   const navigate = useNavigate();
 
+  /**
+   * @description Handles the "Buy Now" action for a book.
+   * Places an order and redirects the user to the "My Orders" page on success.
+   * @param {string} bookId - The ID of the book to purchase.
+   * @returns {Promise<void>}
+   */
   const handleBuy = async (bookId) => {
     try {
       await axios.post(

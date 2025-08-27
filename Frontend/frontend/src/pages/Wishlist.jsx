@@ -3,11 +3,23 @@ import axios from "axios";
 import { getCurrentUser } from "../utils/AuthUtils";
 
 const API = import.meta.env.VITE_API_URL;
+/**
+ * @description Wishlist component displays the authenticated user's saved books.
+ * Allows users to remove books from their wishlist.
+ * @returns {JSX.Element} The Wishlist page component.
+ */
 const Wishlist = () => {
+  /** @type {Array<object>} */
   const [wishlist, setWishlist] = useState([]);
+  /** @type {boolean} */
   const [loading, setLoading] = useState(true);
   const user = getCurrentUser();
 
+  /**
+   * @description Effect hook to fetch the user's wishlist on component mount or when user changes.
+   * Requires user authentication.
+   * @returns {Promise<void>}
+   */
   useEffect(() => {
     if (!user) return;
     const fetchWishlist = async () => {
@@ -28,9 +40,14 @@ const Wishlist = () => {
     fetchWishlist();
   }, [user]);
 
+  /**
+   * @description Handles removing a book from the user's wishlist.
+   * @param {string} bookId - The ID of the book to remove.
+   * @returns {Promise<void>}
+   */
   const handleRemove = async (bookId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/wishlist/${bookId}`, {
+      await axios.delete(`${API}/api/wishlist/${bookId}`, {
         withCredentials: true,
       });
 

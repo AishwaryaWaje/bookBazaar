@@ -1,6 +1,14 @@
 import Book from "../models/Book.js";
 import User from "../models/User.js";
 
+/**
+ * @description Get analytics data including total users and total books.
+ * @route GET /api/admin/analytics
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object containing totalUsers and totalBooks.
+ * @throws {object} - A JSON object with an error message if fetching analytics fails.
+ */
 export const getAnalytics = async (req, res) => {
   try {
     const [totalUsers, totalBooks] = await Promise.all([
@@ -18,6 +26,14 @@ export const getAnalytics = async (req, res) => {
   }
 };
 
+/**
+ * @description Get all books listed in the system, populated with listedBy user details.
+ * @route GET /api/admin/books
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Array<object>} - An array of book objects with listedBy user information.
+ * @throws {object} - A JSON object with an error message if fetching books fails.
+ */
 export const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find().populate("listedBy", "username email").sort({ createdAt: -1 });
@@ -28,6 +44,15 @@ export const getAllBooks = async (req, res) => {
   }
 };
 
+/**
+ * @description Delete a book by its ID (Admin only).
+ * @route DELETE /api/admin/books/:id
+ * @param {object} req - The request object.
+ * @param {string} req.params.id - The ID of the book to delete.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ * @throws {object} - A JSON object with an error message if the book is not found or deletion fails.
+ */
 export const deleteBookByAdmin = async (req, res) => {
   try {
     const bookId = req.params.id;
@@ -44,6 +69,18 @@ export const deleteBookByAdmin = async (req, res) => {
   }
 };
 
+/**
+ * @description Update a book's details by its ID (Admin only).
+ * @route PUT /api/admin/books/:id
+ * @param {object} req - The request object.
+ * @param {string} req.params.id - The ID of the book to update.
+ * @param {string} req.body.title - The new title of the book.
+ * @param {string} req.body.author - The new author of the book.
+ * @param {string} req.body.genere - The new genre of the book.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with the updated book data.
+ * @throws {object} - A JSON object with an error message if the book is not found or update fails.
+ */
 export const updateBookByAdmin = async (req, res) => {
   try {
     const bookId = req.params.id;

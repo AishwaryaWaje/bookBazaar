@@ -2,6 +2,11 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+/**
+ * @description Generates a JWT for admin authentication.
+ * @param {object} user - The user object containing id, username, and isAdmin status.
+ * @returns {string} The generated JWT.
+ */
 const generateAdminToken = (user) => {
   return jwt.sign(
     {
@@ -14,6 +19,16 @@ const generateAdminToken = (user) => {
   );
 };
 
+/**
+ * @description Handles admin login, authenticates credentials, and sets a JWT cookie.
+ * @route POST /api/admin/login
+ * @param {object} req - The request object.
+ * @param {string} req.body.email - The admin user's email.
+ * @param {string} req.body.password - The admin user's password.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message, JWT, and admin user details.
+ * @throws {object} - A JSON object with an error message if login fails.
+ */
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -53,6 +68,13 @@ export const adminLogin = async (req, res) => {
   }
 };
 
+/**
+ * @description Handles admin logout by clearing the JWT cookie.
+ * @route POST /api/admin/logout
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ */
 export const adminLogout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,

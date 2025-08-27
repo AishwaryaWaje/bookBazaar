@@ -2,6 +2,16 @@ import Conversation from "../models/Conversation.js";
 import Book from "../models/Book.js";
 import Message from "../models/Message.js";
 
+/**
+ * @description Retrieves an existing conversation or creates a new one for a given book and current user.
+ * @route POST /api/conversations/get-or-create
+ * @param {object} req - The request object.
+ * @param {string} req.body.bookId - The ID of the book for which to get or create a conversation.
+ * @param {object} req.user - The authenticated user object, containing `userId`.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object containing the conversation details.
+ * @throws {object} - A JSON object with an error message if the user is not authenticated, bookId is missing, book not found, or other server errors occur.
+ */
 export const getOrCreateConversation = async (req, res) => {
   const { bookId } = req.body;
   const userId = req.user?.userId;
@@ -44,6 +54,15 @@ export const getOrCreateConversation = async (req, res) => {
   }
 };
 
+/**
+ * @description Retrieves all conversations for the authenticated user.
+ * @route GET /api/conversations
+ * @param {object} req - The request object.
+ * @param {object} req.user - The authenticated user object, containing `userId`.
+ * @param {object} res - The response object.
+ * @returns {Array<object>} - A JSON array of conversation objects, each populated with book and participant details, and the last message.
+ * @throws {object} - A JSON object with an error message if the user is not authenticated or fetching conversations fails.
+ */
 export const getUserConversations = async (req, res) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "User not authenticated" });
@@ -74,6 +93,16 @@ export const getUserConversations = async (req, res) => {
   }
 };
 
+/**
+ * @description Deletes a conversation and all associated messages.
+ * @route DELETE /api/conversations/:id
+ * @param {object} req - The request object.
+ * @param {string} req.params.id - The ID of the conversation to delete.
+ * @param {object} req.user - The authenticated user object, containing `userId`.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with a success message.
+ * @throws {object} - A JSON object with an error message if the user is not authenticated, conversation not found, unauthorized, or deletion fails.
+ */
 export const deleteConversation = async (req, res) => {
   const userId = req.user?.userId;
   const { id } = req.params;

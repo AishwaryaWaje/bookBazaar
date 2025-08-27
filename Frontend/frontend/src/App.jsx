@@ -15,6 +15,10 @@ import AdminLogin from "./pages/AdminLogin";
 import RequireAdmin from "./pages/RequireAdmin";
 import ForgotPassword from "./pages/ForgotPassword";
 
+/**
+ * @description The main application component that sets up routing for the BookBazaar frontend.
+ * @returns {JSX.Element} The root React component for the application.
+ */
 const App = () => {
   return (
     <Router>
