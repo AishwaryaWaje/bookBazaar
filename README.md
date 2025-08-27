@@ -1,7 +1,9 @@
 # Book Bazaar 📚
 
 Book Bazaar is a peer-to-peer e-commerce platform for buying and selling books.  
+<sub>
 This project includes user authentication, product management and messaging, wishlist & cart functionality.
+</sub>
 ---
 
 ## 🚀 Live Demo
