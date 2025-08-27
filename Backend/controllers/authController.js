@@ -23,7 +23,7 @@ const generateOTP = () => {
 
 const sendEmail = async (to, subject, text) => {
   const mailOptions = {
-    from: EMAIL_USER,
+    from: `BookBazaar <${EMAIL_USER}>`,
     to,
     subject,
     text,
