@@ -71,6 +71,7 @@ export const getUserConversations = async (req, res) => {
     const convos = await Conversation.find({ participants: userId })
       .populate("book", "title price image condition genere listedBy")
       .populate("participants", "username email")
+      .populate("lastSender", "_id") // Populate lastSender with just the _id
       .sort({ updatedAt: -1 })
       .lean();
 
