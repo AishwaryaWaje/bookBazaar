@@ -144,13 +144,16 @@ const Messages = () => {
           conversations.map((convo) => {
             const other = getOtherParticipant(convo, user._id);
             const book = convo.book;
+            const lastMessageSenderId = convo.lastSender._id;
+            const isSentByCurrentUser = lastMessageSenderId === user._id;
+
             return (
               <div
                 key={convo._id}
                 className="p-4 hover:bg-gray-50 flex items-center justify-between gap-2">
                 <div className="flex-1 cursor-pointer" onClick={() => openChat(convo)}>
                   <div className="text-sm text-gray-800">
-                    You have messages from{" "}
+                    {isSentByCurrentUser ? "You sent a message" : "You received a message"} to{" "}
                     <span className="font-semibold">{other?.username || "User"}</span> about{" "}
                     <button
                       type="button"
