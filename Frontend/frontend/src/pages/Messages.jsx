@@ -144,12 +144,9 @@ const Messages = () => {
           conversations.map((convo) => {
             const other = getOtherParticipant(convo, user._id);
             const book = convo.book;
-            const lastMessageSenderId = convo.lastSender._id;
-            const isSentByCurrentUser = lastMessageSenderId === user._id;
+            // Removed lastMessageSenderId and isSentByCurrentUser as they are no longer needed
 
-            console.log("user._id:", user._id);
-            console.log("convo.lastSender._id:", convo.lastSender._id);
-            console.log("isSentByCurrentUser:", isSentByCurrentUser);
+            // Removed console logs
 
             return (
               <div
@@ -157,7 +154,7 @@ const Messages = () => {
                 className="p-4 hover:bg-gray-50 flex items-center justify-between gap-2">
                 <div className="flex-1 cursor-pointer" onClick={() => openChat(convo)}>
                   <div className="text-sm text-gray-800">
-                    {isSentByCurrentUser ? "You sent a message to" : "You received a message from"}{" "}
+                    You have a conversation with{" "}
                     <span className="font-semibold">{other?.username || "User"}</span> about{" "}
                     <button
                       type="button"
