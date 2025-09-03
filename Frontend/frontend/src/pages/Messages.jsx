@@ -147,6 +147,10 @@ const Messages = () => {
             const lastMessageSenderId = convo.lastSender._id;
             const isSentByCurrentUser = lastMessageSenderId === user._id;
 
+            console.log("user._id:", user._id);
+            console.log("convo.lastSender._id:", convo.lastSender._id);
+            console.log("isSentByCurrentUser:", isSentByCurrentUser);
+
             return (
               <div
                 key={convo._id}
