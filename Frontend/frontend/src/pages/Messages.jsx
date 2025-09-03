@@ -153,7 +153,7 @@ const Messages = () => {
                 className="p-4 hover:bg-gray-50 flex items-center justify-between gap-2">
                 <div className="flex-1 cursor-pointer" onClick={() => openChat(convo)}>
                   <div className="text-sm text-gray-800">
-                    {isSentByCurrentUser ? "You sent a message" : "You received a message"} to{" "}
+                    {isSentByCurrentUser ? "You sent a message to" : "You received a message from"}{" "}
                     <span className="font-semibold">{other?.username || "User"}</span> about{" "}
                     <button
                       type="button"
