@@ -1,5 +1,6 @@
 import Book from "../models/Book.js";
 import User from "../models/User.js";
+import Order from "../models/Order.js";
 
 /**
  * @description Get analytics data including total users and total books.
@@ -100,5 +101,66 @@ export const updateBookByAdmin = async (req, res) => {
   } catch (err) {
     console.error("Error updating book:", err);
     res.status(500).json({ message: "Failed to update book", error: err.message });
+  }
+};
+
+/**
+ * @description Get all orders in the system, populated with buyer, seller, and book details (Admin only).
+ * @route GET /api/admin/orders
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {Array<object>} - An array of order objects with populated details.
+ * @throws {object} - A JSON object with an error message if fetching orders fails.
+ */
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("buyer", "username email")
+      .populate("seller", "username email")
+      .populate("book", "title author price")
+      .sort({ createdAt: -1 });
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    res.status(500).json({ message: "Failed to fetch orders", error: err.message });
+  }
+};
+
+/**
+ * @description Update the delivery status of an order (Admin only).
+ * @route PUT /api/admin/orders/:id/status
+ * @param {object} req - The request object.
+ * @param {string} req.params.id - The ID of the order to update.
+ * @param {string} req.body.status - The new delivery status.
+ * @param {object} res - The response object.
+ * @returns {object} - A JSON object with the updated order data.
+ * @throws {object} - A JSON object with an error message if the order is not found or update fails.
+ */
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { status } = req.body;
+
+    if (!["ORDER_PLACED", "ITEM_COLLECTED", "DELIVERED"].includes(status)) {
+      return res.status(400).json({ message: "Invalid order status provided." });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { deliveryStatus: status },
+      { new: true, runValidators: true }
+    )
+      .populate("buyer", "username email")
+      .populate("seller", "username email")
+      .populate("book", "title author price");
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json(updatedOrder);
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    res.status(500).json({ message: "Failed to update order status", error: err.message });
   }
 };

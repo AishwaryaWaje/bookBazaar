@@ -4,6 +4,8 @@ import {
   deleteBookByAdmin,
   getAnalytics,
   updateBookByAdmin,
+  getAllOrders,
+  updateOrderStatus,
 } from "../controllers/adminController.js";
 import { adminLogin, adminLogout } from "../controllers/adminAuthController.js";
 import { protect, isAdmin } from "../middleware/authMiddleware.js";
@@ -178,5 +180,67 @@ router.put("/books/:id", protect, isAdmin, updateBookByAdmin);
  *         description: Server error
  */
 router.get("/analytics", protect, isAdmin, getAnalytics);
+
+/**
+ * @swagger
+ * /api/admin/orders:
+ *   get:
+ *     summary: Get all orders (Admin only)
+ *     tags: [Admin Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all orders
+ *       401:
+ *         description: Unauthorized, token missing or invalid
+ *       403:
+ *         description: Access denied, not an admin
+ *       500:
+ *         description: Server error
+ */
+router.get("/orders", protect, isAdmin, getAllOrders);
+
+/**
+ * @swagger
+ * /api/admin/orders/{id}/status:
+ *   put:
+ *     summary: Update order delivery status (Admin only)
+ *     tags: [Admin Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the order to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: ["ORDER_PLACED", "ITEM_COLLECTED", "DELIVERED"]
+ *                 description: New delivery status of the order
+ *     responses:
+ *       200:
+ *         description: Order status updated successfully
+ *       401:
+ *         description: Unauthorized, token missing or invalid
+ *       403:
+ *         description: Access denied, not an admin
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Server error
+ */
+router.put("/orders/:id/status", protect, isAdmin, updateOrderStatus);
 
 export default router;
