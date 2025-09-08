@@ -206,7 +206,23 @@ const Admin = () => {
         </button>
       </div>
 
-      {/* Analytics Section */}
+      <div className="mb-6 flex gap-4">
+        <button
+          onClick={() =>
+            document.getElementById("books-management").scrollIntoView({ behavior: "smooth" })
+          }
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer">
+          Go to Books Management
+        </button>
+        <button
+          onClick={() =>
+            document.getElementById("orders-management").scrollIntoView({ behavior: "smooth" })
+          }
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer">
+          Go to Orders Management
+        </button>
+      </div>
+
       <div className="bg-gray-100 p-4 rounded shadow-sm mb-6">
         <h2 className="text-xl font-semibold mb-2">Analytics</h2>
         <p>
@@ -220,8 +236,9 @@ const Admin = () => {
         </p>
       </div>
 
-      {/* Books Management Section */}
-      <h2 className="text-xl font-semibold mb-4">Books Management</h2>
+      <h2 id="books-management" className="text-xl font-semibold mb-4">
+        Books Management
+      </h2>
       <input
         type="text"
         placeholder="Search books by title..."
@@ -312,8 +329,9 @@ const Admin = () => {
         )}
       </div>
 
-      {/* Orders Management Section */}
-      <h2 className="text-xl font-semibold mb-4">Orders Management</h2>
+      <h2 id="orders-management" className="text-xl font-semibold mb-4">
+        Orders Management
+      </h2>
       <input
         type="text"
         placeholder="Search orders by book title, buyer or seller username..."
