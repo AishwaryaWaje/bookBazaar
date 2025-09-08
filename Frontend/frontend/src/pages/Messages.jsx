@@ -144,9 +144,6 @@ const Messages = () => {
           conversations.map((convo) => {
             const other = getOtherParticipant(convo, user._id);
             const book = convo.book;
-            // Removed lastMessageSenderId and isSentByCurrentUser as they are no longer needed
-
-            // Removed console logs
 
             return (
               <div
