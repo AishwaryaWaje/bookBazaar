@@ -145,6 +145,10 @@ const Messages = () => {
             const other = getOtherParticipant(convo, user._id);
             const book = convo.book;
 
+            console.log("Conversation:", convo);
+            console.log("Current User ID:", user._id);
+            console.log("Other Participant:", other);
+
             return (
               <div
                 key={convo._id}
@@ -199,7 +203,7 @@ const Messages = () => {
               </button>
             </div>
 
-            <div className="p-4">
+            <div className="p-4 flex-1 overflow-y-auto">
               <ChatPane conversationId={activeChat.convo._id} currentUser={user} />
             </div>
           </div>
