@@ -70,7 +70,7 @@ export const getUserConversations = async (req, res) => {
   try {
     const convos = await Conversation.find({ participants: userId })
       .populate("book", "title price image condition genere listedBy")
-      .populate("participants", "username email")
+      .populate("participants", "_id username email")
       .populate("lastSender", "_id")
       .sort({ updatedAt: -1 })
       .lean();

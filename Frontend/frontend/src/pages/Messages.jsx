@@ -9,13 +9,23 @@ const API = import.meta.env.VITE_API_URL;
 
 /**
  * @description Retrieves the other participant in a conversation, excluding the current user.
+ * Supports both participants array and buyer/seller fields.
  * @param {object} convo - The conversation object.
  * @param {string} currentUserId - The ID of the current authenticated user.
  * @returns {object|null} The user object of the other participant, or null if not found.
  */
 const getOtherParticipant = (convo, currentUserId) => {
-  if (!convo?.participants?.length) return null;
-  return convo.participants.find((p) => p._id !== currentUserId) || null;
+  if (!convo) return null;
+
+  if (Array.isArray(convo.participants) && convo.participants.length > 0) {
+    return convo.participants.find((p) => String(p._id) !== String(currentUserId)) || null;
+  }
+
+  if (convo.buyer && convo.seller) {
+    return String(convo.buyer._id) === String(currentUserId) ? convo.seller : convo.buyer;
+  }
+
+  return null;
 };
 
 /**
