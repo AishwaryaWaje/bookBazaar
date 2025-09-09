@@ -8,6 +8,13 @@ import { FiTrash2 } from "react-icons/fi";
 const API = import.meta.env.VITE_API_URL;
 
 /**
+ * @description Converts a mongoose ObjectId or object with an _id property to its string representation.
+ * @param {object|string} val - The value to convert, can be a mongoose ObjectId or an object with an `_id` property.
+ * @returns {string} The string representation of the ID, or an empty string if invalid input.
+ */
+const idToStr = (val) => (val?._id ? String(val._id) : val ? String(val) : "");
+
+/**
  * @description Retrieves the other participant in a conversation, excluding the current user.
  * Supports both participants array and buyer/seller fields.
  * @param {object} convo - The conversation object.
@@ -15,17 +22,14 @@ const API = import.meta.env.VITE_API_URL;
  * @returns {object|null} The user object of the other participant, or null if not found.
  */
 const getOtherParticipant = (convo, currentUserId) => {
-  if (!convo) return null;
+  if (!convo || !Array.isArray(convo.participants) || convo.participants.length === 0) return null;
+  if (!currentUserId) return null; // Ensure currentUserId is valid
 
-  if (Array.isArray(convo.participants) && convo.participants.length > 0) {
-    return convo.participants.find((p) => String(p._id) !== String(currentUserId)) || null;
-  }
+  const otherParticipant = convo.participants.find(
+    (p) => idToStr(p._id) !== idToStr(currentUserId)
+  );
 
-  if (convo.buyer && convo.seller) {
-    return String(convo.buyer._id) === String(currentUserId) ? convo.seller : convo.buyer;
-  }
-
-  return null;
+  return otherParticipant;
 };
 
 /**
