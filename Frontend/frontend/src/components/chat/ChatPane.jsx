@@ -105,6 +105,7 @@ const ChatPane = ({ conversationId, currentUser }) => {
         );
 
         const saved = res.data;
+        socket.emit("sendMessage", saved);
 
         setMessages((prev) => {
           const msgId = idToStr(saved._id);
