@@ -25,9 +25,9 @@ const getOtherParticipant = (convo, currentUserId) => {
   if (!convo || !Array.isArray(convo.participants) || convo.participants.length === 0) return null;
   if (!currentUserId) return null; // Ensure currentUserId is valid
 
-  const otherParticipant = convo.participants.find(
-    (p) => idToStr(p._id) !== idToStr(currentUserId)
-  );
+  const currentUserIdStr = idToStr(currentUserId);
+
+  const otherParticipant = convo.participants.find((p) => p && idToStr(p._id) !== currentUserIdStr);
 
   return otherParticipant;
 };
