@@ -8,28 +8,14 @@ import { FiTrash2 } from "react-icons/fi";
 const API = import.meta.env.VITE_API_URL;
 
 /**
- * @description Converts a mongoose ObjectId or object with an _id property to its string representation.
- * @param {object|string} val - The value to convert, can be a mongoose ObjectId or an object with an `_id` property.
- * @returns {string} The string representation of the ID, or an empty string if invalid input.
- */
-const idToStr = (val) => (val?._id ? String(val._id) : val ? String(val) : "");
-
-/**
  * @description Retrieves the other participant in a conversation, excluding the current user.
- * Supports both participants array and buyer/seller fields.
  * @param {object} convo - The conversation object.
  * @param {string} currentUserId - The ID of the current authenticated user.
  * @returns {object|null} The user object of the other participant, or null if not found.
  */
 const getOtherParticipant = (convo, currentUserId) => {
-  if (!convo || !Array.isArray(convo.participants) || convo.participants.length === 0) return null;
-  if (!currentUserId) return null; // Ensure currentUserId is valid
-
-  const currentUserIdStr = idToStr(currentUserId);
-
-  const otherParticipant = convo.participants.find((p) => p && idToStr(p._id) !== currentUserIdStr);
-
-  return otherParticipant;
+  if (!convo?.participants?.length) return null;
+  return convo.participants.find((p) => p._id !== currentUserId) || null;
 };
 
 /**
@@ -196,7 +182,7 @@ const Messages = () => {
 
       {activeChat && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-xl bg-white rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="w-full max-w-xl bg-white rounded-lg shadow-xl overflow-hidden flex flex-col">
             <div className="px-4 py-3 border-b flex items-start justify-between">
               <div className="text-sm">
                 <p className="font-semibold text-gray-800">
