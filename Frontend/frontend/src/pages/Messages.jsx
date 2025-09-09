@@ -145,10 +145,6 @@ const Messages = () => {
             const other = getOtherParticipant(convo, user._id);
             const book = convo.book;
 
-            console.log("Conversation:", convo);
-            console.log("Current User ID:", user._id);
-            console.log("Other Participant:", other);
-
             return (
               <div
                 key={convo._id}
@@ -186,7 +182,7 @@ const Messages = () => {
 
       {activeChat && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-xl bg-white rounded-lg shadow-xl overflow-hidden flex flex-col">
+          <div className="w-full max-w-xl bg-white rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-4 py-3 border-b flex items-start justify-between">
               <div className="text-sm">
                 <p className="font-semibold text-gray-800">

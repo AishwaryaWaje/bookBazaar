@@ -163,9 +163,13 @@ const Home = () => {
     }
 
     try {
-      const existing = await axios.get(`${API}/api/conversations/book/${book._id}`, {
-        withCredentials: true,
-      });
+      const existing = await axios.post(
+        `${API}/api/conversations`,
+        { bookId: book._id },
+        {
+          withCredentials: true,
+        }
+      );
 
       if (existing.data && existing.data._id) {
         setActiveChat({ book, conversationId: existing.data._id });
