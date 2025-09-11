@@ -160,7 +160,7 @@ const Navbar = () => {
           value={searchTerm}
           onChange={handleSearchChange}
           placeholder="Search books by Title/Author..."
-          className="px-3 py-1 text-white placeholder-white rounded-md w-64 border border-white bg-transparent"
+          className="px-3 py-1 text-white rounded-md w-64 border border-white bg-transparent"
         />
       </div>
 
@@ -168,7 +168,7 @@ const Navbar = () => {
         {user && (
           <button
             onClick={() => handleProtectedClick("/messages")}
-            className="hover:underline cursor-pointer"
+            className="hover:underline cursor-pointer px-2"
             type="button">
             <i className="fa-solid fa-envelope"></i>
           </button>
@@ -176,7 +176,7 @@ const Navbar = () => {
 
         <button
           onClick={() => handleProtectedClick("/wishlist")}
-          className="hover:underline cursor-pointer"
+          className="hover:underline cursor-pointer px-2"
           type="button">
           <i className="fa-solid fa-heart"></i>
         </button>
@@ -205,38 +205,38 @@ const Navbar = () => {
               <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-md z-10 w-40 py-1 text-sm">
                 <button
                   onClick={() => go("/add-book")}
-                  className="block w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+                  className="block w-full px-4 py-3 text-left hover:bg-gray-100 cursor-pointer"
                   type="button">
                   Add Book
                 </button>
                 <button
                   onClick={() => go("/my-books")}
-                  className="block w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+                  className="block w-full px-4 py-3 text-left hover:bg-gray-100 cursor-pointer"
                   type="button">
                   My Books
                 </button>
                 <button
                   onClick={() => go("/my-orders")}
-                  className="block w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+                  className="block w-full px-4 py-3 text-left hover:bg-gray-100 cursor-pointer"
                   type="button">
                   My Orders
                 </button>
                 <button
                   onClick={() => go("/wishlist")}
-                  className="block w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+                  className="block w-full px-4 py-3 text-left hover:bg-gray-100 cursor-pointer"
                   type="button">
                   My Wishlist
                 </button>
                 <button
                   onClick={() => go("/messages")}
-                  className="block w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+                  className="block w-full px-4 py-3 text-left hover:bg-gray-100 cursor-pointer"
                   type="button">
                   Messages
                 </button>
                 <div className="border-t my-1" />
                 <button
                   onClick={handleLogout}
-                  className="block w-full px-4 py-2 text-left hover:bg-gray-100 text-red-600 cursor-pointer"
+                  className="block w-full px-4 py-3 text-left hover:bg-gray-100 text-red-600 cursor-pointer"
                   type="button">
                   Logout
                 </button>

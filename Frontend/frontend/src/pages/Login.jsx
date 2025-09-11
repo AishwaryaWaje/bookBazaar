@@ -17,6 +17,7 @@ const Login = () => {
   const [inputs, setInputs] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   /**
    * @description Handles changes in the input fields.
@@ -34,6 +35,8 @@ const Login = () => {
    */
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
       const res = await axios.post(`${API}/api/auth/login`, inputs, {
         withCredentials: true,
@@ -44,6 +47,8 @@ const Login = () => {
       window.location.reload();
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,8 +78,9 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 cursor-pointer">
-            Login
+            disabled={loading}
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 disabled:opacity-50 cursor-pointer">
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className="text-center mt-4">
