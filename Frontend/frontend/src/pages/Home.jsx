@@ -1,190 +1,317 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
-import { getCurrentUser, getToken } from "../utils/AuthUtils";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser } from "../utils/AuthUtils";
+import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import ChatModal from "../components/chat/ChatModel";
+import FiltersBar from "../components/Filterbar";
 
 const API = import.meta.env.VITE_API_URL;
+console.log(import.meta.env.VITE_API_URL);
+/**
+ * @description Shuffles the elements of an array randomly.
+ * @param {Array<any>} array - The array to shuffle.
+ * @returns {Array<any>} A new array with shuffled elements.
+ */
+const shuffleArray = (array) => {
+  return array
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+};
+
+const BOOKS_PER_PAGE = 28;
 
 /**
- * @description Home page component displaying list of books
- * @returns {JSX.Element} The Home page
+ * @description Home page component displaying a list of books with filtering, search, wishlist, and chat functionalities.
+ * @returns {JSX.Element} The Home page component.
  */
 const Home = () => {
-  /** @type {[Array, Function]} */
+  /** @type {Array<object>} */
   const [books, setBooks] = useState([]);
-  /** @type {[boolean, Function]} */
+  /** @type {Set<string>} */
+  const [wishlistIds, setWishlistIds] = useState(new Set());
+  /** @type {boolean} */
   const [loading, setLoading] = useState(true);
-  /** @type {[Array, Function]} */
-  const [wishlist, setWishlist] = useState([]);
+  /** @type {object|null} */
+  const [activeChat, setActiveChat] = useState(null);
+  /** @type {object} */
+  const [filters, setFilters] = useState({
+    genere: "",
+    condition: "",
+    minPrice: "",
+    maxPrice: "",
+  });
+  /** @type {number} */
+  const [currentPage, setCurrentPage] = useState(1);
+  /** @type {number} */
+  const [totalBooks, setTotalBooks] = useState(0);
+  const user = getCurrentUser();
   const navigate = useNavigate();
 
   /**
-   * @description Fetches all books from the API
+   * @description Fetches books from the API based on current filters and pagination.
+   * Shuffles the fetched books and updates the state.
    * @returns {Promise<void>}
    */
   const fetchBooks = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get(`${API}/api/books`);
-      setBooks(res.data);
-    } catch (error) {
-      console.error("Error fetching books:", error);
+      const res = await axios.get(`${API}/api/books`, {
+        params: {
+          ...filters,
+          page: currentPage,
+          limit: BOOKS_PER_PAGE,
+        },
+        withCredentials: true,
+      });
+      const shuffled = shuffleArray(res.data.books);
+      setBooks(shuffled);
+      setTotalBooks(res.data.total);
+    } catch (err) {
+      console.error("Error fetching books", err);
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * @description Fetches wishlist for logged-in user
-   * @returns {Promise<void>}
+   * @description Effect hook to fetch books whenever filters or current page change.
    */
-  const fetchWishlist = async () => {
-    try {
-      const user = getCurrentUser();
-      if (!user) return;
-
-      const token = getToken();
-      const res = await axios.get(`${API}/api/wishlist`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setWishlist(res.data.map((item) => item.book?._id));
-    } catch (error) {
-      console.error("Error fetching wishlist:", error);
-    }
-  };
-
   useEffect(() => {
     fetchBooks();
-    fetchWishlist();
-  }, []);
+  }, [filters, currentPage]);
 
   /**
-   * @description Toggles book in wishlist
-   * @param {string} bookId
+   * @description Effect hook to fetch the user's wishlist on component mount or when user changes.
+   * Populates `wishlistIds` with book IDs from the user's wishlist.
+   * @returns {Promise<void>}
+   */
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      if (!user) return;
+      try {
+        const res = await axios.get(`${API}/api/wishlist`, {
+          withCredentials: true,
+        });
+        const ids = new Set(res.data.map((item) => item.book?._id));
+        setWishlistIds(ids);
+      } catch (err) {
+        console.error("Error fetching wishlist", err);
+      }
+    };
+    fetchWishlist();
+  }, [user]);
+
+  /**
+   * @description Toggles a book's presence in the user's wishlist (add or remove).
+   * Requires user authentication.
+   * @param {string} bookId - The ID of the book to toggle in the wishlist.
    * @returns {Promise<void>}
    */
   const handleWishlistToggle = async (bookId) => {
-    try {
-      const token = getToken();
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+    if (!user) {
+      alert("Please login to manage wishlist.");
+      return;
+    }
 
-      if (wishlist.includes(bookId)) {
+    if (wishlistIds.has(bookId)) {
+      try {
         await axios.delete(`${API}/api/wishlist/${bookId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
         });
-        setWishlist(wishlist.filter((id) => id !== bookId));
-      } else {
-        await axios.post(
-          `${API}/api/wishlist`,
-          { bookId },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setWishlist([...wishlist, bookId]);
+        setWishlistIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(bookId);
+          return newSet;
+        });
+      } catch (err) {
+        console.error("Error removing from wishlist", err);
       }
-    } catch (error) {
-      console.error("Error updating wishlist:", error);
+    } else {
+      try {
+        await axios.post(`${API}/api/wishlist`, { bookId }, { withCredentials: true });
+        setWishlistIds((prev) => new Set(prev).add(bookId));
+      } catch (err) {
+        console.error("Error adding to wishlist", err);
+      }
     }
   };
 
   /**
-   * @description Handles clicking on a book card
-   * @param {Object} book
-   */
-  const handleBookClick = (book) => {
-    navigate(`/books/${book._id}`);
-  };
-
-  /**
-   * @description Returns label for listedBy field
-   * @param {string} listedBy
-   * @returns {string}
+   * @description Generates a display label for the book's lister.
+   * @param {object} listedBy - The user object of the book's lister.
+   * @returns {string} The display label ("You", username, or "Unknown").
    */
   const getListedByLabel = (listedBy) => {
-    switch (listedBy) {
-      case "user":
-        return "User";
-      case "admin":
-        return "Admin";
-      default:
-        return "Unknown";
+    if (!listedBy) return "Unknown";
+    if (user && listedBy._id === user._id) return "You";
+    if (listedBy.username) return listedBy.username;
+    return "Unknown";
+  };
+
+  /**
+   * @description Handles clicking on a book card, opening a chat modal or redirecting to login.
+   * @param {object} book - The book object that was clicked.
+   * @returns {Promise<void>}
+   */
+  const handleBookClick = async (book) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const existing = await axios.post(
+        `${API}/api/conversations`,
+        { bookId: book._id },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (existing.data && existing.data._id) {
+        setActiveChat({ book, conversationId: existing.data._id });
+        return;
+      }
+    } catch (err) {
+      if (err.response && err.response.status !== 404) {
+        console.error("Error checking conversation:", err.response.data);
+        alert("Unable to open chat.");
+        return;
+      }
+    }
+
+    if (book.listedBy?._id === user._id) {
+      alert("You cannot chat about your own listing until someone messages you.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `${API}/api/conversations`,
+        { bookId: book._id },
+        { withCredentials: true }
+      );
+      setActiveChat({ book, conversationId: res.data._id });
+    } catch (createErr) {
+      console.error("Failed to create chat:", createErr.response?.data || createErr);
+      alert("You can't open this chat as you have posted this.");
     }
   };
 
+  /**
+   * @description Renders pagination controls for the book listings.
+   * @returns {JSX.Element|null} The pagination component or null if only one page.
+   */
+  const renderPagination = () => {
+    const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE);
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    const delta = 2;
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
+      }
+    }
+
+    return (
+      <div className="flex justify-center items-center mt-8 space-x-2">
+        {pages.map((page, index) => (
+          <button
+            key={index}
+            disabled={page === "..."}
+            className={`px-3 py-1 rounded-md border text-sm ${
+              page === currentPage
+                ? "bg-black text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+            onClick={() => typeof page === "number" && setCurrentPage(page)}>
+            {page}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  if (loading)
+    return (
+      <div className="col-span-full text-center text-gray-500 text-sm py-8">Loading books...</div>
+    );
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Available Books</h2>
+    <div>
+      <FiltersBar filters={filters} setFilters={setFilters} />
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : (
+      <div className="px-4 pt-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {books.map((book) => {
-            const isInWishlist = wishlist.includes(book._id);
+          {books.length > 0 ? (
+            books.map((book) => {
+              const isInWishlist = wishlistIds.has(book._id);
+              return (
+                <div
+                  key={book._id}
+                  onClick={() => handleBookClick(book)}
+                  className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col w-full max-w-xs mx-auto cursor-pointer">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWishlistToggle(book._id);
+                    }}
+                    className="absolute top-3 right-3 p-1 bg-white rounded-full shadow-md hover:scale-110 transition">
+                    {isInWishlist ? (
+                      <HeartSolid className="h-6 w-6 text-red-500" />
+                    ) : (
+                      <HeartOutline className="h-6 w-6 text-gray-500" />
+                    )}
+                  </button>
 
-            return (
-              <div
-                key={book._id}
-                onClick={() => handleBookClick(book)}
-                className="relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col w-full max-w-xs mx-auto cursor-pointer transform hover:-translate-y-2 hover:scale-[1.02] border border-gray-100">
-                {/* Wishlist button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWishlistToggle(book._id);
-                  }}
-                  className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-lg hover:scale-110 transition transform">
-                  {isInWishlist ? (
-                    <HeartSolid className="h-6 w-6 text-red-500 drop-shadow-md" />
-                  ) : (
-                    <HeartOutline className="h-6 w-6 text-gray-600 hover:text-red-500" />
-                  )}
-                </button>
-
-                {/* Book image */}
-                <div className="relative">
                   <img
                     src={book.image || "https://via.placeholder.com/250x200?text=No+Image"}
                     alt={book.title}
-                    className="w-full h-56 object-cover bg-gray-100"
+                    className="w-full h-48 object-contain bg-gray-100 p-2"
                   />
-                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/70 to-transparent" />
-                </div>
 
-                {/* Book info */}
-                <div className="p-4 flex flex-col flex-grow text-sm">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2">
-                    {book.title}
-                  </h3>
-                  <p className="text-gray-600 mb-2 italic">by {book.author}</p>
-
-                  <div className="flex flex-col gap-1 text-xs text-gray-500">
-                    <p>
+                  <div className="p-3 flex flex-col flex-grow text-sm">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-1">{book.title}</h3>
+                    <p className="text-gray-600 mb-1">by {book.author}</p>
+                    <p className="text-gray-500 text-xs mb-1">
                       <span className="font-medium">Genre:</span> {book.genere || "N/A"}
                     </p>
-                    <p>
+                    <p className="text-gray-500 text-xs mb-1">
                       <span className="font-medium">Condition:</span> {book.condition || "N/A"}
                     </p>
-                  </div>
-
-                  <div className="mt-auto flex justify-between items-center pt-3">
-                    <p className="text-green-600 font-extrabold text-lg">₹{book.price}</p>
-                    <span className="text-xs text-gray-400">
+                    <p className="text-green-600 font-bold text-base mt-2">₹{book.price}</p>
+                    <p className="text-xs text-gray-400 mt-1">
                       Listed by: {getListedByLabel(book.listedBy)}
-                    </span>
+                    </p>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center text-gray-500 text-sm py-8">
+              No books found.
+            </div>
+          )}
         </div>
-      )}
+
+        {renderPagination()}
+
+        {activeChat && (
+          <ChatModal
+            book={activeChat.book}
+            conversationId={activeChat.conversationId}
+            currentUser={user}
+            onClose={() => setActiveChat(null)}
+          />
+        )}
+      </div>
     </div>
   );
 };
