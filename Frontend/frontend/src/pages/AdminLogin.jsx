@@ -67,8 +67,13 @@ const AdminLogin = () => {
           required
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded cursor-pointer">
-          Login
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2 rounded cursor-pointer text-white ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+          }`}>
+          {loading ? "Logging..." : "Login"}
         </button>
       </form>
     </div>
