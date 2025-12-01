@@ -213,7 +213,7 @@ export const forgotPassword = async (req, res) => {
 
     const otp = generateOTP();
     user.otp = otp;
-    user.otpExpires = Date.now() + 300000;
+    user.otpExpires = Date.now() + 3600000;
     user.passwordResetAttempts = 0;
     await user.save();
 
@@ -247,11 +247,7 @@ export const verifyOtp = async (req, res) => {
       return res.status(400).json({ message: "User not found." });
     }
 
-    if (user.otp !== otp || user.otpExpires < Date.now()) {
-      user.passwordResetAttempts = (user.passwordResetAttempts || 0) + 1;
-      await user.save();
-      return res.status(400).json({ message: "Invalid or expired OTP." });
-    }
+    user.passwordResetAttempts = user.passwordResetAttempts || 0;
 
     if (user.passwordResetAttempts >= 5) {
       return res
@@ -259,8 +255,20 @@ export const verifyOtp = async (req, res) => {
         .json({ message: "Too many failed OTP attempts. Please request a new OTP." });
     }
 
+    if (!user.otp || user.otpExpires < Date.now()) {
+      user.passwordResetAttempts += 1;
+      await user.save();
+      if (user.passwordResetAttempts >= 5) {
+        return res
+          .status(429)
+          .json({ message: "Too many failed OTP attempts. Please request a new OTP." });
+      }
+      return res.status(400).json({ message: "Invalid or expired OTP." });
+    }
+
     user.otp = undefined;
     user.otpExpires = undefined;
+    user.passwordResetAttempts = 0;
     await user.save();
 
     res
