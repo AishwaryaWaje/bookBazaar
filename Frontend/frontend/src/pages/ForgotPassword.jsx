@@ -37,7 +37,7 @@ const ForgotPassword = () => {
     setError("");
     setMessage("");
     try {
-      const res = await axios.post(`${API}/forgot-password`, { email });
+      const res = await axios.post(`${API}/api/auth/forgot-password`, { email });
       setMessage(res.data.message);
       setStep(2);
     } catch (err) {
@@ -56,7 +56,7 @@ const ForgotPassword = () => {
     setError("");
     setMessage("");
     try {
-      const res = await axios.post(`${API}/verify-otp`, { email, otp });
+      const res = await axios.post(`${API}/api/auth/verify-otp`, { email, otp });
       setMessage(res.data.message);
       setStep(3);
     } catch (err) {
@@ -79,7 +79,7 @@ const ForgotPassword = () => {
       return;
     }
     try {
-      const res = await axios.post(`${API}/reset-password`, { email, newPassword });
+      const res = await axios.post(`${API}/api/auth/reset-password`, { email, newPassword });
       setMessage(res.data.message);
       navigate("/login");
     } catch (err) {
