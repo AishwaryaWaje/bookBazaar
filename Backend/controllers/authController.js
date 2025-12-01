@@ -10,11 +10,21 @@ const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASS,
   },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("Email server connection error:", error);
+  } else {
+    console.log("Email server is ready");
+  }
 });
 
 const generateOTP = () => {
